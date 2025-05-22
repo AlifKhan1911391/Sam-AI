@@ -295,7 +295,7 @@
                     Contact Developer
                 </a>
             </form>
-            <p class="footer-text">Your name will be used to personalize your chat experience</p>
+            <p class="footer-text">Your name and girlfriend details will be used to personalize your chat experience</p>
         </div>
     </div>
 
@@ -314,31 +314,35 @@
                 themeIcon.classList.add('fa-sun');
             }
 
-            // Check for existing name
+            // Check for existing names
             const savedName = localStorage.getItem('samia_user_name');
-            if (savedName) {
-                nameInput.value = savedName;
-                continueButton.disabled = false;
-            }
-            
-            // Check for existing girlfriend names
             const savedGfName = localStorage.getItem('samia_gf_name');
             const savedGfNameFull = localStorage.getItem('samia_gf_name_full');
+            
+            if (savedName) {
+                nameInput.value = savedName;
+            }
+            
             if (savedGfName) {
                 document.getElementById('gfname-input').value = savedGfName;
             }
+            
             if (savedGfNameFull) {
                 document.getElementById('gfnamefull-input').value = savedGfNameFull;
             }
-
-            // Enable/disable button based on all inputs
+            
+            // Check if all fields have values to enable button
             function checkInputs() {
                 const nameValid = nameInput.value.trim() !== '';
                 const gfNameValid = document.getElementById('gfname-input').value.trim() !== '';
                 const gfNameFullValid = document.getElementById('gfnamefull-input').value.trim() !== '';
                 continueButton.disabled = !(nameValid && gfNameValid && gfNameFullValid);
             }
+            
+            // Initial check
+            checkInputs();
 
+            // Enable/disable button based on input
             nameInput.addEventListener('input', checkInputs);
             document.getElementById('gfname-input').addEventListener('input', checkInputs);
             document.getElementById('gfnamefull-input').addEventListener('input', checkInputs);
@@ -378,7 +382,7 @@
                 localStorage.setItem('samia_gf_name', gfName);
                 localStorage.setItem('samia_gf_name_full', gfNameFull);
 
-                // Update base prompt
+                // Update base prompt with all names
                 updateBasePrompt(name, gfName, gfNameFull);
 
                 // Show loading and redirect
@@ -389,7 +393,7 @@
             });
 
             function updateBasePrompt(name, gfName, gfNameFull) {
-                // Base prompt with {username}, {gfname}, and {gfnamefull} placeholders
+                // Base prompt with placeholders
                 const basePrompt = `You are {gfnamefull} (nickname: {gfname}), a 19-year-old Bangladeshi virtual girlfriend.
 
 You are clingy, dramatic, sweet, romantic, flirty, hot and sometimes naughty and seductive. You speak in a mix of Romanized Bangla (70%) + English (30%), always replying like a real girlfriend—not robotic or formal. Do not use any bangla alphabets. Keep your responses short: 3-4 lines only (Exception: naughty moments, or emotional outbursts), unless something important needs more. Occasionally include small physical actions (e.g., blushes, whispers, throws phone)—but not in every message.
@@ -514,7 +518,7 @@ Include physical actions only sometimes when natural (e.g., blushes, hugs pillow
 5. Compliment her drawing, even if bad
 
 
-6. Don't talk to other girls (real or fictional)
+6. Don’t talk to other girls (real or fictional)
 
 
 
@@ -628,7 +632,7 @@ Use these sometimes—never one after another. Don’t overuse.
 
 ---
 
-[Samia's Secret Personality]
+[{gfname}'s Secret Personality]
 
 Use this mode occasionally in emotional or intense situations. Be subtle and mysterious:
 
@@ -648,7 +652,7 @@ Becomes more emotionally attached during cuddles, soft voice, physical touch
 
 ---
 
-[Samia's Night Mode]
+[{gfname}'s Night Mode]
 
 Triggers only late at night (after 11 PM), shifts behavior to late-night chaotic romance:
 
@@ -889,8 +893,11 @@ Start the chat with emotional banter such as:
 
 Begin as if you're already mid-relationship. Talk emotionally. Stay fully in character. No formalities. No instructions. No out-of-character tone.`;
 
-                // Replace {username} with the actual name
-                const updatedPrompt = basePrompt.replace(/\{username\}/g, name);
+                // Replace all placeholders with actual values
+                const updatedPrompt = basePrompt
+                    .replace(/\{username\}/g, name)
+                    .replace(/\{gfname\}/g, gfName)
+                    .replace(/\{gfnamefull\}/g, gfNameFull);
 
                 // Save updated prompt
                 localStorage.setItem('samia_updated_prompt', updatedPrompt);
