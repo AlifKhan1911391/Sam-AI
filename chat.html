@@ -1179,12 +1179,13 @@
                 <i class="fas fa-arrow-left"></i>
             </div>
             <div class="profile-pic avatar-loading">
-                <img src="avatar.jpeg" alt="Samia's Avatar" 
+                <img src="avatar.jpeg" alt="{gfname}'s Avatar" 
+                     class="profile-pic-img"
                      onload="this.parentElement.classList.remove('avatar-loading')"
                      onerror="this.src='https://i.imgur.com/JQJxZOY.jpg'; this.parentElement.classList.remove('avatar-loading')">
             </div>
             <div class="header-info">
-                <div class="profile-name">Samia Afroz 💖</div>
+                <div class="profile-name">{gfnamefull} 💖</div>
                 <div class="status">
                     <div class="status-dot"></div>
                     Active now
@@ -1207,7 +1208,7 @@
 
         <div class="chat-input-container">
             <div class="input-wrapper">
-                <textarea class="message-input" placeholder="Type a message to Samia..." id="message-input" rows="1" aria-label="Message input"></textarea>
+                <textarea class="message-input" placeholder="Type a message to {gfname}..." id="message-input" rows="1" aria-label="Message input"></textarea>
                 <div class="char-counter" id="char-counter">0/1000</div>
                 <button class="photo-button" id="photo-button" title="Send a photo" aria-label="Send a photo">
                     <i class="fas fa-image"></i>
@@ -1262,7 +1263,7 @@
         <!-- Photo upload preview -->
         <div class="photo-preview-container" id="photo-preview-container">
             <div class="photo-preview-header">
-                <div class="photo-preview-title">Send photo to Samia</div>
+                <div class="photo-preview-title">Send photo to {gfname}</div>
                 <button class="photo-preview-close" id="photo-preview-close" aria-label="Close photo preview">
                     <i class="fas fa-times"></i>
                 </button>
@@ -1412,11 +1413,46 @@
 
             // Initialize the chat
             async function initChat() {
-                // Get user name
+                // Get user name and girlfriend names
                 const userName = localStorage.getItem('samia_user_name') || 'friend';
-
+                const gfName = localStorage.getItem('samia_gf_name') || '{gfname}';
+                const gfNameFull = localStorage.getItem('samia_gf_name_full') || '{gfnamefull}';
+                
+                // Replace all placeholders in the UI with actual values
+                replacePlaceholdersInUI(gfName, gfNameFull);
+                
                 // Send initial message
-                await sendToGemini(`Start the conversation as my girlfriend Samia. Remember my name is ${userName}.`);
+                await sendToGemini(`Start the conversation as my girlfriend ${gfName}. Remember my name is ${userName}.`);
+            }
+            
+            // Function to replace all placeholders in the UI with actual values
+            function replacePlaceholdersInUI(gfName, gfNameFull) {
+                // Update page title
+                document.title = document.title.replace('{gfname}', gfName);
+                
+                // Update profile name
+                const profileName = document.querySelector('.profile-name');
+                if (profileName) {
+                    profileName.textContent = profileName.textContent.replace('{gfnamefull}', gfNameFull);
+                }
+                
+                // Update alt text for images
+                const images = document.querySelectorAll('img[alt*="{gfname}"]');
+                images.forEach(img => {
+                    img.alt = img.alt.replace('{gfname}', gfName);
+                });
+                
+                // Update message input placeholder
+                const messageInput = document.getElementById('message-input');
+                if (messageInput && messageInput.placeholder) {
+                    messageInput.placeholder = messageInput.placeholder.replace('{gfname}', gfName);
+                }
+                
+                // Update photo preview title
+                const photoPreviewTitle = document.querySelector('.photo-preview-title');
+                if (photoPreviewTitle) {
+                    photoPreviewTitle.textContent = photoPreviewTitle.textContent.replace('{gfname}', gfName);
+                }
             }
 
             // Setup event listeners
@@ -1636,12 +1672,12 @@
                 // Add the base prompt as system message
                 formattedConversation.push({
                     role: "user",
-                    parts: [{ text: basePrompt || "You are Samia, a 19-year-old Bangladeshi virtual girlfriend. Be sweet, romantic, and sometimes flirty. Mix Romanized Bangla (70%) with English (30%). Keep responses short (3-4 lines)." }]
+                    parts: [{ text: basePrompt || `You are ${gfNameFull || '{gfnamefull}'}, a 19-year-old Bangladeshi virtual girlfriend. Be sweet, romantic, and sometimes flirty. Mix Romanized Bangla (70%) with English (30%). Keep responses short (3-4 lines).` }]
                 });
 
                 formattedConversation.push({
                     role: "model",
-                    parts: [{ text: "I'll be Samia, your Bangladeshi girlfriend. I'll respond as described." }]
+                    parts: [{ text: `I'll be ${gfName || '{gfname}'}, your Bangladeshi girlfriend. I'll respond as described.` }]
                 });
 
                 // Add conversation history (limited to last 10 messages)
@@ -1891,7 +1927,7 @@
 
                                 // Set image properties
                                 img.className = 'message-image';
-                                img.alt = 'Samia sent an image';
+                                img.alt = `${gfName} sent an image`;
                                 img.style.display = 'block'; // Ensure image is displayed as block
                                 img.style.maxWidth = '100%'; // Ensure image fits in container
                                 img.style.marginTop = '8px'; // Add some spacing
@@ -2040,7 +2076,7 @@
 
                         // Set image properties
                         img.className = 'message-image';
-                        img.alt = isUser ? 'You sent an image' : 'Samia sent an image';
+                        img.alt = isUser ? 'You sent an image' : `${gfName} sent an image`;
                         img.style.display = 'block'; // Ensure image is displayed as block
                         img.style.maxWidth = '100%'; // Ensure image fits in container
                         img.style.marginTop = '8px'; // Add some spacing
