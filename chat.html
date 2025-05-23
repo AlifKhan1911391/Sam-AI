@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-                :root {
+        :root {
             /* Light mode variables */
             --background-light: #FFFFFF;
             --background-secondary-light: #F0F2F5;
@@ -127,6 +127,7 @@
             transition: background-color var(--transition-normal);
             will-change: background-color;
             overflow-x: hidden; /* Prevent horizontal scrolling */
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Enhanced shadow */
         }
 
         @media (min-width: 768px) {
@@ -136,11 +137,12 @@
                 margin: 0 auto;
                 border-left: 1px solid rgba(0, 0, 0, 0.1);
                 border-right: 1px solid rgba(0, 0, 0, 0.1);
+                border-radius: 12px; /* Rounded corners on desktop */
             }
         }
 
         .chat-header {
-            padding: 12px 16px;
+            padding: 14px 16px; /* Slightly more padding */
             background-color: var(--background);
             display: flex;
             align-items: center;
@@ -155,6 +157,7 @@
             box-shadow: var(--shadow-sm);
             transition: background-color var(--transition-normal);
             will-change: background-color;
+            backdrop-filter: blur(10px); /* Frosted glass effect */
         }
 
         @media (min-width: 768px) {
@@ -163,45 +166,59 @@
                 left: 50%;
                 transform: translateX(-50%);
                 width: 100%;
+                border-radius: 12px 12px 0 0; /* Rounded top corners on desktop */
             }
         }
 
         .chat-messages {
             margin-top: 65px; /* Add space for fixed header */
+            padding-bottom: 90px; /* Increased padding for input area */
         }
 
         .back-button {
             margin-right: 12px;
-            width: 32px;
-            height: 32px;
+            width: 36px; /* Slightly larger */
+            height: 36px; /* Slightly larger */
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
             color: var(--accent-color);
             cursor: pointer;
-            transition: background-color var(--transition-fast);
+            transition: background-color var(--transition-fast), transform var(--transition-fast);
         }
 
         .back-button:hover {
             background-color: var(--input-bg);
+            transform: scale(1.05); /* Subtle grow effect */
+        }
+
+        .back-button:active {
+            transform: scale(0.95); /* Subtle press effect */
         }
 
         .profile-pic {
-            width: 40px;
-            height: 40px;
+            width: 44px; /* Slightly larger */
+            height: 44px; /* Slightly larger */
             border-radius: 50%;
             margin-right: 12px;
             background-color: var(--input-bg);
             overflow: hidden;
             flex-shrink: 0;
             position: relative;
+            border: 2px solid var(--accent-color); /* Accent border */
+            box-shadow: 0 2px 8px rgba(0, 132, 255, 0.3); /* Subtle glow */
         }
 
         .profile-pic img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.3s ease; /* Smooth zoom effect */
+        }
+
+        .profile-pic:hover img {
+            transform: scale(1.05); /* Subtle zoom on hover */
         }
 
         @keyframes pulse {
@@ -217,7 +234,7 @@
 
         .profile-name {
             font-weight: 600;
-            font-size: 16px;
+            font-size: 17px; /* Slightly larger */
             color: var(--text-primary);
             white-space: nowrap;
             overflow: hidden;
@@ -243,6 +260,7 @@
             flex-shrink: 0;
             animation: pulse 2s infinite;
             display: block; /* Always visible */
+            box-shadow: 0 0 5px var(--online-status); /* Subtle glow */
         }
 
         .status-dot.typing-dot {
@@ -261,21 +279,26 @@
         }
 
         .header-button {
-            width: 32px;
-            height: 32px;
+            width: 36px; /* Slightly larger */
+            height: 36px; /* Slightly larger */
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
             color: var(--accent-color);
             cursor: pointer;
-            transition: background-color var(--transition-fast);
+            transition: background-color var(--transition-fast), transform var(--transition-fast);
             background: none;
             border: none;
         }
 
         .header-button:hover {
             background-color: var(--input-bg);
+            transform: scale(1.05); /* Subtle grow effect */
+        }
+
+        .header-button:active {
+            transform: scale(0.95); /* Subtle press effect */
         }
 
         .chat-messages {
@@ -314,7 +337,7 @@
         }
 
         .message-container {
-            margin-bottom: 8px;
+            margin-bottom: 12px; /* Increased spacing */
             display: flex;
             flex-direction: column;
             animation: fadeIn 0.3s ease-out;
@@ -331,19 +354,20 @@
         .bot-message-container {
             display: flex;
             align-items: flex-start;
-            margin-bottom: 8px;
+            margin-bottom: 12px; /* Increased spacing */
             padding-left: 8px; /* Reduced from 48px */
         }
 
         .message {
             max-width: 80%;
-            padding: 10px 14px;
+            padding: 12px 16px; /* Increased padding */
             border-radius: var(--radius-md);
             font-size: 15px;
-            line-height: 1.4;
+            line-height: 1.5; /* Improved line height */
             word-wrap: break-word;
             position: relative;
             margin-bottom: 2px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1); /* Subtle shadow */
         }
 
         .message p {
@@ -420,6 +444,7 @@
             animation: slideInRightBounce 0.3s ease-out;
             position: relative;
             padding: 12px 16px; /* Added padding */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Enhanced shadow */
         }
 
         /* Visual feedback for sending message */
@@ -457,6 +482,7 @@
             animation: slideInLeftBounce 0.3s ease-out;
             position: relative;
             max-width: calc(80% - 52px); /* Account for avatar space */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtle shadow */
         }
 
         @keyframes slideInLeftBounce {
@@ -467,18 +493,25 @@
 
         /* Profile picture for messages - fixed to be perfect circle */
         .message-avatar {
-            width: 32px;
-            height: 32px;
+            width: 36px; /* Slightly larger */
+            height: 36px; /* Slightly larger */
             border-radius: 50%;
             margin-top: 8px; /* Align with first line of text */
             flex-shrink: 0;
             overflow: hidden; /* Ensure image stays within circle */
+            border: 2px solid var(--accent-color); /* Accent border */
+            box-shadow: 0 2px 8px rgba(0, 132, 255, 0.2); /* Subtle glow */
         }
 
         .message-avatar img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.3s ease; /* Smooth zoom effect */
+        }
+
+        .message-avatar:hover img {
+            transform: scale(1.05); /* Subtle zoom on hover */
         }
 
         /* Improved: Connect consecutive messages from the same sender with consistent spacing */
@@ -493,157 +526,37 @@
         }
 
         .error-message {
-            background-color: #FFEBEE;
-            color: #C62828;
-            border: 1px solid #FFCDD2;
+            background-color: rgba(244, 67, 54, 0.1);
+            color: #F44336;
+            border: 1px solid rgba(244, 67, 54, 0.3);
             padding: 12px 16px;
             border-radius: var(--radius-md);
-            margin-bottom: 8px;
-            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+            margin: 8px 0;
+            font-size: 14px;
+            text-align: center;
+            animation: errorShake 0.5s ease;
         }
 
-        @keyframes shake {
-            10%, 90% { transform: translate3d(-1px, 0, 0); }
-            20%, 80% { transform: translate3d(2px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-            40%, 60% { transform: translate3d(4px, 0, 0); }
+        @keyframes errorShake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
         }
 
-        .dark-mode .error-message {
-            background-color: rgba(198, 40, 40, 0.2);
-            color: #EF9A9A;
-            border-color: rgba(239, 83, 80, 0.5);
-        }
-
-        .message-time {
-            font-size: 11px;
-            color: var(--text-secondary);
-            opacity: 0.8;
-            margin-top: 4px;
-            text-align: right;
-            transition: color var(--transition-normal);
-        }
-
-        .user-message .message-time {
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        /* Typing indicator */
-        .typing-container {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 8px;
-            padding-left: 8px;
-        }
-
-        .typing-indicator {
-            display: flex;
-            align-items: center;
-            background-color: var(--bot-bubble);
-            padding: 12px 16px;
-            border-radius: 0 var(--radius-md) var(--radius-md) var(--radius-md);
-            margin-left: 12px;
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        .typing-dot {
-            width: 8px;
-            height: 8px;
-            background-color: var(--text-secondary);
-            border-radius: 50%;
-            margin: 0 2px;
-            animation: typingBounce 1.4s infinite ease-in-out;
-        }
-
-        .typing-dot:nth-child(1) {
-            animation-delay: 0s;
-        }
-
-        .typing-dot:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .typing-dot:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-
-        @keyframes typingBounce {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-6px); }
-        }
-
-        /* Typing text animation */
-        .typing-text-container {
-            display: inline-block;
-            position: relative;
-        }
-
-        .typing-text {
-            display: inline-block;
-            overflow: hidden;
-            border-right: 2px solid var(--text-secondary);
-            white-space: nowrap;
-            animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite;
-        }
-
-        .typing-cursor {
-            display: inline-block;
-            width: 2px;
-            height: 16px;
-            background-color: var(--text-secondary);
-            margin-left: 2px;
-            animation: blink-cursor 0.7s infinite;
-        }
-
-        @keyframes typing {
-            from { width: 0 }
-            to { width: 100% }
-        }
-
-        @keyframes blink-caret {
-            from, to { border-color: transparent }
-            50% { border-color: var(--text-secondary); }
-        }
-
-        @keyframes blink-cursor {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
-
-        /* Seen indicator */
-        .seen-indicator {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-top: 4px;
-            margin-bottom: 8px;
-            padding-right: 8px;
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        .seen-indicator img {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            margin-left: 4px;
-        }
-
-        /* Chat input container */
         .chat-input-container {
-            padding: 12px 16px;
-            background-color: var(--background);
-            border-top: 1px solid rgba(0, 0, 0, 0.1);
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            width: 100%;
-            max-width: 100%;
-            z-index: 100;
+            padding: 12px 16px;
+            background-color: var(--background);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            z-index: 10;
             transition: background-color var(--transition-normal);
-            will-change: background-color;
+            max-width: 100%;
+            margin: 0 auto;
+            backdrop-filter: blur(10px); /* Frosted glass effect */
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1); /* Enhanced shadow */
         }
 
         @media (min-width: 768px) {
@@ -651,20 +564,27 @@
                 max-width: 768px;
                 left: 50%;
                 transform: translateX(-50%);
-                width: 100%;
                 border-left: 1px solid rgba(0, 0, 0, 0.1);
                 border-right: 1px solid rgba(0, 0, 0, 0.1);
+                border-radius: 0 0 12px 12px; /* Rounded bottom corners on desktop */
             }
         }
 
         .input-wrapper {
             display: flex;
             align-items: flex-end;
-            position: relative;
             background-color: var(--input-bg);
             border-radius: var(--radius-full);
             padding: 8px 12px;
-            transition: background-color var(--transition-normal);
+            position: relative;
+            transition: background-color var(--transition-normal), box-shadow 0.3s ease;
+            border: 1px solid var(--input-border);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Subtle shadow */
+        }
+
+        .input-wrapper:focus-within {
+            box-shadow: 0 0 0 2px rgba(0, 132, 255, 0.3); /* Focus glow */
+            border-color: var(--accent-color);
         }
 
         .message-input {
@@ -673,26 +593,27 @@
             background: none;
             font-size: 15px;
             color: var(--text-primary);
-            padding: 8px 0;
-            max-height: 120px;
             resize: none;
+            max-height: 120px;
+            padding: 0;
             outline: none;
+            line-height: 1.5;
             transition: color var(--transition-normal);
         }
 
         .message-input::placeholder {
             color: var(--text-secondary);
-            transition: color var(--transition-normal);
+            opacity: 0.8;
         }
 
         .char-counter {
             position: absolute;
-            right: 90px;
-            bottom: 10px;
+            right: 80px;
+            bottom: 8px;
             font-size: 12px;
             color: var(--text-secondary);
             opacity: 0;
-            transition: opacity var(--transition-fast), color var(--transition-normal);
+            transition: opacity 0.2s ease;
         }
 
         .char-counter.visible {
@@ -714,12 +635,15 @@
             font-size: 20px;
             padding: 8px;
             cursor: pointer;
-            transition: transform var(--transition-fast);
+            transition: transform var(--transition-fast), color var(--transition-fast);
             margin-right: 4px;
+            border-radius: 50%;
         }
 
         .photo-button:hover {
             transform: scale(1.1);
+            color: var(--accent-hover);
+            background-color: rgba(0, 132, 255, 0.1); /* Subtle background on hover */
         }
 
         .photo-button:active {
@@ -737,8 +661,9 @@
             font-size: 20px;
             padding: 8px;
             cursor: pointer;
-            transition: transform var(--transition-fast), opacity var(--transition-fast);
+            transition: transform var(--transition-fast), opacity var(--transition-fast), color var(--transition-fast);
             margin-left: 4px;
+            border-radius: 50%;
         }
 
         .send-button:disabled {
@@ -748,6 +673,8 @@
 
         .send-button:not(:disabled):hover {
             transform: scale(1.1);
+            color: var(--accent-hover);
+            background-color: rgba(0, 132, 255, 0.1); /* Subtle background on hover */
         }
 
         .send-button:not(:disabled):active {
@@ -759,8 +686,8 @@
             position: fixed;
             bottom: 80px;
             right: 16px;
-            width: 40px;
-            height: 40px;
+            width: 44px; /* Slightly larger */
+            height: 44px; /* Slightly larger */
             border-radius: 50%;
             background-color: var(--background);
             color: var(--accent-color);
@@ -789,6 +716,12 @@
 
         .scroll-to-bottom:hover {
             background-color: var(--input-bg);
+            transform: translateY(-2px); /* Subtle float effect */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15); /* Enhanced shadow on hover */
+        }
+
+        .scroll-to-bottom:active {
+            transform: translateY(0);
         }
 
         /* Message reactions */
@@ -892,6 +825,7 @@
             max-width: 320px;
             max-height: 200px;
             overflow-y: auto;
+            border: 1px solid rgba(0, 0, 0, 0.1);
         }
 
         .emoji-picker.visible {
@@ -935,12 +869,13 @@
             padding: 4px 8px;
             border-radius: 8px;
             cursor: pointer;
-            transition: background-color 0.2s ease;
+            transition: background-color 0.2s ease, transform 0.2s ease;
         }
 
         .emoji-category:hover,
         .emoji-category.active {
             background-color: var(--input-bg);
+            transform: scale(1.05);
         }
 
         /* Message image styling */
@@ -949,8 +884,9 @@
             border-radius: 12px;
             margin-top: 8px;
             cursor: pointer;
-            transition: transform 0.2s ease;
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
             border: 2px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .dark-mode .message-image {
@@ -959,6 +895,7 @@
 
         .message-image:hover {
             transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
         /* Image preview modal */
@@ -976,6 +913,7 @@
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.3s ease;
+            backdrop-filter: blur(5px);
         }
 
         .image-preview-modal.visible {
@@ -987,6 +925,12 @@
             max-width: 90%;
             max-height: 90%;
             position: relative;
+            animation: zoomIn 0.3s ease-out;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
         .image-preview-content img {
@@ -994,6 +938,7 @@
             max-height: 90vh;
             border-radius: var(--radius-md);
             box-shadow: var(--shadow-lg);
+            border: 2px solid rgba(255, 255, 255, 0.2);
         }
 
         .image-preview-close {
@@ -1011,11 +956,16 @@
             cursor: pointer;
             font-size: 18px;
             border: none;
-            transition: background-color 0.2s ease;
+            transition: background-color 0.2s ease, transform 0.2s ease;
         }
 
         .image-preview-close:hover {
             background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .image-preview-close:active {
+            transform: scale(0.95);
         }
 
         /* Photo upload preview */
@@ -1035,6 +985,8 @@
             transition: transform 0.3s ease;
             max-width: 100%;
             margin: 0 auto;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
         }
 
         @media (min-width: 768px) {
@@ -1045,6 +997,7 @@
                 border-left: 1px solid rgba(0, 0, 0, 0.1);
                 border-right: 1px solid rgba(0, 0, 0, 0.1);
                 width: 100%; /* Ensure full width up to max-width */
+                border-radius: 12px 12px 0 0;
             }
 
             .photo-preview-container.visible {
@@ -1071,8 +1024,8 @@
         }
 
         .photo-preview-close {
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             display: flex;
             justify-content: center;
@@ -1081,11 +1034,16 @@
             cursor: pointer;
             background: none;
             border: none;
-            transition: background-color 0.2s ease;
+            transition: background-color 0.2s ease, transform 0.2s ease;
         }
 
         .photo-preview-close:hover {
             background-color: var(--input-bg);
+            transform: scale(1.05);
+        }
+
+        .photo-preview-close:active {
+            transform: scale(0.95);
         }
 
         .photo-preview-image {
@@ -1094,6 +1052,8 @@
             border-radius: var(--radius-md);
             margin-bottom: 16px;
             object-fit: contain;
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .photo-preview-actions {
@@ -1104,13 +1064,22 @@
 
         .photo-preview-button {
             flex: 1;
-            padding: 10px 16px;
+            padding: 12px 16px;
             border-radius: var(--radius-sm);
             font-weight: 500;
             font-size: 15px;
             cursor: pointer;
-            transition: background-color 0.2s ease;
+            transition: background-color 0.2s ease, transform 0.2s ease;
             border: none;
+        }
+
+        .photo-preview-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .photo-preview-button:active {
+            transform: translateY(0);
         }
 
         .photo-preview-cancel {
@@ -1144,6 +1113,7 @@
             align-items: center;
             border-radius: var(--radius-md);
             z-index: 2;
+            backdrop-filter: blur(3px);
         }
 
         .loading-spinner {
@@ -1292,6 +1262,18 @@
             const emojiContainer = document.getElementById('emoji-container');
             const charCounter = document.getElementById('char-counter');
             const profileName = document.getElementById('profile-name');
+            
+            // Photo-related DOM elements - added at the top to fix the issue
+            const photoButton = document.getElementById('photo-button');
+            const photoInput = document.getElementById('photo-input');
+            const photoPreviewImage = document.getElementById('photo-preview-image');
+            const photoPreviewContainer = document.getElementById('photo-preview-container');
+            const photoPreviewClose = document.getElementById('photo-preview-close');
+            const photoPreviewCancel = document.getElementById('photo-preview-cancel');
+            const photoPreviewSend = document.getElementById('photo-preview-send');
+            const imagePreviewModal = document.getElementById('image-preview-modal');
+            const imagePreviewImg = document.getElementById('image-preview-img');
+            const imagePreviewClose = document.getElementById('image-preview-close');
 
             // Get dynamic names from localStorage
             const userName = localStorage.getItem('samia_user_name') || 'friend';
@@ -1464,9 +1446,22 @@
                     window.location.href = 'index.html';
                 });
 
-                // Photo button
-                photoButton.addEventListener('click', function() {
-                    photoInput.click();
+                // Photo button - Enhanced with error handling and delay
+                photoButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Try to trigger the file input with a slight delay for better cross-browser compatibility
+                    setTimeout(() => {
+                        try {
+                            photoInput.click();
+                            console.log('Photo input click triggered');
+                        } catch (error) {
+                            console.error('Error triggering photo input:', error);
+                        }
+                    }, 50);
+                    
+                    return false;
                 });
 
                 // Photo input change
@@ -1701,303 +1696,170 @@
                         }
                     });
 
-                    responseText = responseText.replace(/^(Aiyoo!|Aiyoo|Uff!|Hmph!|Uff|Hmph)(\s+|\s*[!,]\s*)/i, '');
-
                     conversationHistory.push({
                         text: responseText,
                         isUser: false,
                         timestamp: new Date(),
-                        images: responseImages.length > 0 ? responseImages : null
+                        images: responseImages
                     });
 
-                    addMessageWithTypingAnimation(responseText, responseImages);
-                    setTimeout(updateSeenIndicator, 1000);
-
-                    profilePic.classList.add('message-received');
-                    setTimeout(() => {
-                        profilePic.classList.remove('message-received');
-                    }, 600);
-
-                    statusElement.innerHTML = `<div class="status-dot"></div>Active now`;
-                } catch (error) {
-                    console.error("Response Processing Error:", error);
-                    addMessage({ error: true, message: `Error processing response: ${error.message}` }, false, true);
-                    statusElement.innerHTML = `<div class="status-dot"></div>Active now`;
-                }
-            }
-
-            // Add message with enhanced typing animation
-            function addMessageWithTypingAnimation(text, images = null) {
-                const container = document.createElement('div');
-                container.className = 'message-container bot-message-container';
-
-                const avatarHTML = `
-                    <div class="message-avatar">
-                        <img src="avatar.jpeg" alt="${gfName}'s Avatar" onerror="this.src='https://i.imgur.com/JQJxZOY.jpg'">
-                    </div>
-                `;
-
-                const messageElement = document.createElement('div');
-                messageElement.className = 'message bot-message';
-
-                const timestamp = document.createElement('div');
-                timestamp.className = 'message-time';
-                timestamp.textContent = getCurrentTime();
-                messageElement.appendChild(timestamp);
-
-                container.innerHTML = avatarHTML;
-                container.appendChild(messageElement);
-                chatMessages.appendChild(container);
-
-                if (isScrolledToBottom) {
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }
-
-                const segments = text.split(/(?<=[.!?])\s+/);
-                let currentIndex = 0;
-
-                function typeNextSegment() {
-                    if (currentIndex < segments.length) {
-                        const segment = segments[currentIndex];
-                        const typingContainer = document.createElement('div');
-                        typingContainer.className = 'typing-text-container';
-
-                        const typingText = document.createElement('span');
-                        typingText.className = 'typing-text';
-                        typingText.textContent = segment;
-
-                        const cursor = document.createElement('span');
-                        cursor.className = 'typing-cursor';
-
-                        typingContainer.appendChild(typingText);
-                        typingContainer.appendChild(cursor);
-                        messageElement.appendChild(typingContainer);
-
-                        if (isScrolledToBottom) {
-                            chatMessages.scrollTop = chatMessages.scrollHeight;
-                        }
-
-                        const typingDuration = Math.min(Math.max(segment.length * 30, 500), 2000);
-
-                        setTimeout(() => {
-                            cursor.remove();
-                            typingText.classList.remove('typing-text');
-                            if (currentIndex < segments.length - 1) {
-                                messageElement.appendChild(document.createElement('br'));
-                            }
-                            currentIndex++;
-                            typeNextSegment();
-                        }, typingDuration);
-                    } else {
-                        if (images && images.length > 0) {
-                            images.forEach(imgSrc => {
-                                if (!imgSrc) return;
-                                const img = document.createElement('img');
-                                if (typeof imgSrc === 'string') {
-                                    if (imgSrc.startsWith('data:')) {
-                                        img.src = imgSrc;
-                                    } else if (imgSrc.startsWith('http')) {
-                                        img.src = imgSrc;
-                                    } else {
-                                        img.src = `data:image/jpeg;base64,${imgSrc}`;
-                                    }
-                                } else {
-                                    console.error('Invalid image source:', imgSrc);
-                                    return;
-                                }
-
-                                img.className = 'message-image';
-                                img.alt = `${gfName} sent an image`;
-                                img.style.display = 'block';
-                                img.style.maxWidth = '100%';
-                                img.style.marginTop = '8px';
-                                img.style.marginBottom = '8px';
-                                img.addEventListener('click', () => openImagePreview(img.src));
-                                messageElement.insertBefore(img, timestamp);
-                                console.log('Bot image added to message:', img.src.substring(0, 30) + '...');
-                            });
-                        }
-                        setupMessageDetailsPanel(container, false);
-                        setupMessageReactions(messageElement);
+                    addMessage(responseText, false, false, false, responseImages);
+                    
+                    // Add "seen" indicator
+                    if (lastSeenIndicator) {
+                        lastSeenIndicator.remove();
                     }
+                    
+                    const seenIndicator = document.createElement('div');
+                    seenIndicator.className = 'seen-indicator';
+                    seenIndicator.textContent = 'Seen';
+                    seenIndicator.style.textAlign = 'right';
+                    seenIndicator.style.fontSize = '12px';
+                    seenIndicator.style.color = 'var(--text-secondary)';
+                    seenIndicator.style.marginTop = '4px';
+                    seenIndicator.style.marginRight = '8px';
+                    chatMessages.appendChild(seenIndicator);
+                    lastSeenIndicator = seenIndicator;
+
+                    // Scroll to bottom
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                } catch (error) {
+                    console.error("Error processing response:", error);
+                    addMessage({
+                        error: true,
+                        message: "Sorry, I couldn't process that response. Please try again."
+                    }, false, true);
                 }
-                typeNextSegment();
-                return container;
             }
 
-            // Show typing indicator with enhanced animation
+            // Show typing indicator
             function showTyping() {
                 statusElement.innerHTML = `<div class="status-dot typing-dot"></div>Typing...`;
-                statusElement.classList.add('typing');
-                profilePic.classList.add('typing');
-
-                const container = document.createElement('div');
-                container.className = 'typing-container';
-                container.id = 'typing-indicator';
-                container.innerHTML = `
-                    <div class="message-avatar">
-                        <img src="avatar.jpeg" alt="${gfName}'s Avatar" onerror="this.src='https://i.imgur.com/JQJxZOY.jpg'">
-                    </div>
-                    <div class="typing-indicator">
-                        <div class="typing-dot"></div>
-                        <div class="typing-dot"></div>
-                        <div class="typing-dot"></div>
-                    </div>
-                `;
-
-                chatMessages.appendChild(container);
-
-                if (isScrolledToBottom) {
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }
-
-                return container;
+                
+                // Add typing indicator message
+                const typingContainer = document.createElement('div');
+                typingContainer.className = 'bot-message-container typing-container';
+                typingContainer.id = 'typing-indicator';
+                
+                const avatarDiv = document.createElement('div');
+                avatarDiv.className = 'message-avatar';
+                const avatarImg = document.createElement('img');
+                avatarImg.src = profilePic.querySelector('img').src;
+                avatarImg.alt = "Girlfriend's Avatar";
+                avatarDiv.appendChild(avatarImg);
+                
+                const typingIndicator = document.createElement('div');
+                typingIndicator.className = 'bot-message typing-indicator';
+                typingIndicator.innerHTML = '<span></span><span></span><span></span>';
+                
+                typingContainer.appendChild(avatarDiv);
+                typingContainer.appendChild(typingIndicator);
+                
+                chatMessages.appendChild(typingContainer);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
             }
 
+            // Hide typing indicator
             function hideTyping() {
                 statusElement.innerHTML = `<div class="status-dot"></div>Active now`;
-                statusElement.classList.remove('typing');
                 const typingIndicator = document.getElementById('typing-indicator');
                 if (typingIndicator) {
                     typingIndicator.remove();
                 }
-                profilePic.classList.remove('typing');
             }
 
-            // Add message to the chat
-            function addMessage(message, isUser = false, isError = false, withAnimation = true, images = null, isSending = false) {
-                const container = document.createElement('div');
-                container.className = isUser ? 'message-container user-message-container' : 'message-container bot-message-container';
-
-                let messageHTML = '';
-                if (!isUser) {
-                    messageHTML += `
-                        <div class="message-avatar">
-                            <img src="avatar.jpeg" alt="${gfName}'s Avatar" onerror="this.src='https://i.imgur.com/JQJxZOY.jpg'">
-                        </div>
-                    `;
-                }
-
-                const messageClass = isUser ? 'message user-message' : 'message bot-message';
-                const errorClass = isError ? ' error-message' : '';
-                const sendingClass = isSending ? ' sending-message' : '';
-
-                let messageContent = '';
+            // Add message to chat
+            function addMessage(message, isUser = false, isError = false, isSystem = false, images = null, isSending = false) {
                 if (isError) {
-                    messageContent = message.message || 'An error occurred';
-                } else if (typeof message === 'string') {
-                    messageContent = isUser ? message : marked.parse(message);
-                } else {
-                    messageContent = message;
-                }
-
-                messageHTML += `<div class="${messageClass}${errorClass}${sendingClass}">`;
-                messageHTML += messageContent;
-                messageHTML += `<div class="message-time">${getCurrentTime()}</div>`;
-                messageHTML += `</div>`;
-
-                container.innerHTML = messageHTML;
-                chatMessages.appendChild(container);
-
-                const messageElement = container.querySelector('.message');
-                if (images && images.length > 0 && messageElement) {
-                    images.forEach(imgSrc => {
-                        if (!imgSrc) return;
-                        const img = document.createElement('img');
-                        if (typeof imgSrc === 'string') {
-                            if (imgSrc.startsWith('data:')) {
-                                img.src = imgSrc;
-                            } else if (imgSrc.startsWith('http')) {
-                                img.src = imgSrc;
-                            } else {
-                                img.src = `data:image/jpeg;base64,${imgSrc}`;
-                            }
-                        } else {
-                            console.error('Invalid image source:', imgSrc);
-                            return;
-                        }
-
-                        img.className = 'message-image';
-                        img.alt = isUser ? 'You sent an image' : `${gfName} sent an image`;
-                        img.style.display = 'block';
-                        img.style.maxWidth = '100%';
-                        img.style.marginTop = '8px';
-                        img.style.marginBottom = '8px';
-                        img.addEventListener('click', () => openImagePreview(img.src));
-
-                        const timestamp = messageElement.querySelector('.message-time');
-                        if (timestamp) {
-                            messageElement.insertBefore(img, timestamp);
-                        } else {
-                            messageElement.appendChild(img);
-                        }
-                        console.log('Image added to message:', img.src.substring(0, 30) + '...');
-                    });
-                }
-
-                if (isScrolledToBottom) {
+                    const errorContainer = document.createElement('div');
+                    errorContainer.className = 'error-message';
+                    errorContainer.textContent = message.message || message;
+                    chatMessages.appendChild(errorContainer);
                     chatMessages.scrollTop = chatMessages.scrollHeight;
+                    return errorContainer;
                 }
 
-                if (!isError && !isSending) {
-                    setupMessageDetailsPanel(container, isUser);
-                    setupMessageReactions(messageElement);
+                if (isSystem) {
+                    const systemContainer = document.createElement('div');
+                    systemContainer.className = 'system-message';
+                    systemContainer.textContent = message;
+                    chatMessages.appendChild(systemContainer);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    return systemContainer;
                 }
 
-                return container;
-            }
+                const messageContainer = document.createElement('div');
+                messageContainer.className = isUser ? 'message-container user-message-container' : 'message-container bot-message-container';
 
-            // Update the seen indicator at the bottom of the chat
-            function updateSeenIndicator() {
-                if (lastSeenIndicator) {
-                    lastSeenIndicator.remove();
+                if (!isUser) {
+                    const avatarDiv = document.createElement('div');
+                    avatarDiv.className = 'message-avatar';
+                    const avatarImg = document.createElement('img');
+                    avatarImg.src = profilePic.querySelector('img').src;
+                    avatarImg.alt = "Girlfriend's Avatar";
+                    avatarDiv.appendChild(avatarImg);
+                    messageContainer.appendChild(avatarDiv);
                 }
 
-                if (conversationHistory.length > 0) {
-                    lastSeenIndicator = document.createElement('div');
-                    lastSeenIndicator.className = 'seen-indicator';
-                    lastSeenIndicator.innerHTML = `
-                        Seen
-                        <img src="avatar.jpeg" alt="Seen" onerror="this.src='https://i.imgur.com/JQJxZOY.jpg'">
-                    `;
-                    chatMessages.appendChild(lastSeenIndicator);
-
-                    if (isScrolledToBottom) {
-                        chatMessages.scrollTop = chatMessages.scrollHeight;
-                    }
+                const messageElement = document.createElement('div');
+                messageElement.className = isUser ? 'message user-message' : 'message bot-message';
+                
+                if (isSending) {
+                    messageElement.classList.add('sending-message');
                 }
-            }
 
-            // Handle message details panel
-            function setupMessageDetailsPanel(container, isUser) {
-                const message = container.querySelector('.message');
-                const detailsPanel = document.createElement('div');
-                detailsPanel.className = 'message-details';
-                detailsPanel.innerHTML = `Sent at ${getCurrentTime()} • Seen`;
-                container.appendChild(detailsPanel);
+                // Process message text with markdown
+                if (typeof message === 'string') {
+                    // Replace line breaks with <br> for proper rendering
+                    const formattedMessage = message.replace(/\n/g, '<br>');
+                    messageElement.innerHTML = formattedMessage;
+                }
 
-                message.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    document.querySelectorAll('.message-container.show-details').forEach(el => {
-                        if (el !== container) {
-                            el.classList.remove('show-details');
-                        }
+                // Add images if present
+                if (images && images.length > 0) {
+                    images.forEach(imgData => {
+                        const imgElement = document.createElement('img');
+                        imgElement.src = imgData;
+                        imgElement.className = 'message-image';
+                        imgElement.alt = "Shared image";
+                        imgElement.addEventListener('click', () => {
+                            openImagePreview(imgData);
+                        });
+                        messageElement.appendChild(imgElement);
                     });
-                    container.classList.toggle('show-details');
-                });
+                }
 
-                document.addEventListener('click', function() {
-                    container.classList.remove('show-details');
-                });
+                // Add timestamp
+                const timestamp = document.createElement('div');
+                timestamp.className = 'message-timestamp';
+                timestamp.textContent = getCurrentTime();
+                timestamp.style.fontSize = '10px';
+                timestamp.style.marginTop = '4px';
+                timestamp.style.opacity = '0.7';
+                timestamp.style.textAlign = isUser ? 'right' : 'left';
+                
+                // Add reaction panel
+                if (!isUser) {
+                    const reactionPanel = reactionPanelTemplate.cloneNode(true);
+                    reactionPanel.id = '';
+                    reactionPanel.style.display = 'block';
+                    messageElement.appendChild(reactionPanel);
+                    
+                    setupReactionListeners(messageElement);
+                }
+
+                messageContainer.appendChild(messageElement);
+                messageContainer.appendChild(timestamp);
+                chatMessages.appendChild(messageContainer);
+
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                return messageContainer;
             }
 
-            // Setup message reactions
-            function setupMessageReactions(messageElement) {
-                const reactionPanel = reactionPanelTemplate.cloneNode(true);
-                reactionPanel.id = '';
-                reactionPanel.style.display = 'flex';
-                messageElement.appendChild(reactionPanel);
-
+            // Setup reaction listeners
+            function setupReactionListeners(messageElement) {
                 let longPressTimer;
                 let longPressStarted = false;
 
@@ -2037,18 +1899,21 @@
                     showReactionPanel(messageElement);
                 });
 
-                reactionPanel.querySelectorAll('.reaction-btn').forEach(btn => {
-                    btn.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        const emoji = this.getAttribute('data-emoji');
-                        if (emoji === '+') {
-                            showEmojiPicker(messageElement);
-                        } else {
-                            addReactionToMessage(messageElement, emoji);
-                            hideReactionPanel();
-                        }
+                const reactionPanel = messageElement.querySelector('.reaction-panel');
+                if (reactionPanel) {
+                    reactionPanel.querySelectorAll('.reaction-btn').forEach(btn => {
+                        btn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            const emoji = this.getAttribute('data-emoji');
+                            if (emoji === '+') {
+                                showEmojiPicker(messageElement);
+                            } else {
+                                addReactionToMessage(messageElement, emoji);
+                                hideReactionPanel();
+                            }
+                        });
                     });
-                });
+                }
             }
 
             // Show reaction panel
