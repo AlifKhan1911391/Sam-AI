@@ -1274,899 +1274,945 @@
             </div>
         </div>
     </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // DOM Elements
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+        const chatMessages = document.getElementById('chat-messages');
+        const statusElement = document.querySelector('.status');
+        const scrollToBottomBtn = document.getElementById('scroll-to-bottom');
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = themeToggle.querySelector('i');
+        const profilePic = document.querySelector('.profile-pic');
+        const backButton = document.getElementById('back-button');
+        const reactionPanelTemplate = document.getElementById('reaction-panel-template');
+        const emojiPickerTemplate = document.getElementById('emoji-picker-template');
+        const emojiContainer = document.getElementById('emoji-container');
+        const charCounter = document.getElementById('char-counter');
+        const profileName = document.getElementById('profile-name');
+        const photoButton = document.getElementById('photo-button');
+        const photoInput = document.getElementById('photo-input');
+        const photoPreviewContainer = document.getElementById('photo-preview-container');
+        const photoPreviewImage = document.getElementById('photo-preview-image');
+        const photoPreviewClose = document.getElementById('photo-preview-close');
+        const photoPreviewCancel = document.getElementById('photo-preview-cancel');
+        const photoPreviewSend = document.getElementById('photo-preview-send');
+        const imagePreviewModal = document.getElementById('image-preview-modal');
+        const imagePreviewImg = document.getElementById('image-preview-img');
+        const imagePreviewClose = document.getElementById('image-preview-close');
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // DOM Elements
-            const messageInput = document.getElementById('message-input');
-            const sendButton = document.getElementById('send-button');
-            const chatMessages = document.getElementById('chat-messages');
-            const statusElement = document.querySelector('.status');
-            const scrollToBottomBtn = document.getElementById('scroll-to-bottom');
-            const themeToggle = document.getElementById('theme-toggle');
-            const themeIcon = themeToggle.querySelector('i');
-            const profilePic = document.querySelector('.profile-pic');
-            const backButton = document.getElementById('back-button');
-            const reactionPanelTemplate = document.getElementById('reaction-panel-template');
-            const emojiPickerTemplate = document.getElementById('emoji-picker-template');
-            const emojiContainer = document.getElementById('emoji-container');
-            const charCounter = document.getElementById('char-counter');
-            const profileName = document.getElementById('profile-name');
+        // Get dynamic names from localStorage
+        const userName = localStorage.getItem('samia_user_name') || 'friend';
+        const gfName = localStorage.getItem('samia_gf_name') || 'Samia';
+        const gfNameFull = localStorage.getItem('samia_gf_name_full') || 'Samia Afroz';
 
-            // Get dynamic names from localStorage
-            const userName = localStorage.getItem('samia_user_name') || 'friend';
-            const gfName = localStorage.getItem('samia_gf_name') || 'Samia';
-            const gfNameFull = localStorage.getItem('samia_gf_name_full') || 'Samia Afroz';
+        // Update profile name and title
+        profileName.textContent = `${gfNameFull} 💖`;
+        document.title = `${gfName} Chatbot: Your AI Girlfriend`;
 
-            // Update profile name and title
-            profileName.textContent = `${gfNameFull} 💖`;
-            document.title = `${gfName} Chatbot: Your AI Girlfriend`;
+        // Google Gemini API Key
+        const GEMINI_API_KEY = 'AIzaSyA4noABIgUKn19XEQqP8aVRkmc7VfvF5Cs';
+        const GEMINI_API_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
 
-            // Google Gemini API Key
-            const GEMINI_API_KEY = 'AIzaSyA4noABIgUKn19XEQqP8aVRkmc7VfvF5Cs'; // Use your actual key
+        // Get the updated prompt from localStorage
+        const basePrompt = localStorage.getItem('samia_updated_prompt') || '';
 
-            // Gemini API Endpoint
-            const GEMINI_API_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+        // Conversation history array
+        let conversationHistory = [];
+        let lastSeenIndicator = null;
+        let activeReactionPanel = null;
+        let activeEmojiPicker = null;
+        let activeMessageElement = null;
+        let currentPhotoData = null;
+        let isScrolledToBottom = true;
+        let scrollDebounceTimer;
 
-            // Get the updated prompt from localStorage
-            const basePrompt = localStorage.getItem('samia_updated_prompt') || '';
+        // Emoji categories
+        const emojisByCategory = {
+            recent: ['👍', '❤️', '😂', '🔥', '😍', '🎉', '🙏', '👏', '🥰', '😊'],
+            smileys: ['😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗', '☺️', '😚', '😙', '🥲'],
+            people: ['👋', '🤚', '🖐️', '✋', '🖖', '👌', '🤌', '🤏', '✌️', '🤞', '🤟', '🤘', '🤙', '👈', '👉', '👆', '🖕', '👇', '☝️', '👍'],
+            animals: ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐻‍❄️', '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐵', '🙈', '🙉', '🙊', '🐒'],
+            food: ['🍎', '🍐', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🫐', '🍈', '🍒', '🍑', '🥭', '🍍', '🥥', '🥝', '🍅', '🍆', '🥑', '🥦'],
+            activities: ['⚽', '🏀', '🏈', '⚾', '🥎', '🎾', '🏐', '🏉', '🥏', '🎱', '🪀', '🏓', '🏸', '🏒', '🏑', '🥍', '🏏', '🪃', '🥅', '⛳'],
+            travel: ['🚗', '🚕', '🚙', '🚌', '🚎', '🏎️', '🚓', '🚑', '🚒', '🚐', '🛻', '🚚', '🚛', '🚜', '🦯', '🦽', '🦼', '🛴', '🚲', '🛵'],
+            objects: ['💡', '🔦', '🧯', '🛢️', '💸', '💵', '💴', '💶', '💷', '💰', '💳', '💎', '⚖️', '🔧', '🔨', '⚒️', '🛠️', '⛏️', '🪓', '🔩'],
+            symbols: ['❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '💔', '❣️', '💕', '💞', '💓', '💗', '💖', '💘', '💝', '💟', '☮️'],
+            flags: ['🏁', '🚩', '🎌', '🏴', '🏳️', '🏳️‍🌈', '🏳️‍⚧️', '🏴‍☠️', '🇦🇨', '🇦🇩', '🇦🇪', '🇦🇫', '🇦🇬', '🇦🇮', '🇦🇱', '🇦🇲', '🇦🇴', '🇦🇶', '🇦🇷', '🇦🇸']
+        };
 
-            // Conversation history array to maintain state (not stored in localStorage)
-            let conversationHistory = [];
-
-            // Track the last seen indicator
-            let lastSeenIndicator = null;
-
-            // Track active reaction panel and emoji picker
-            let activeReactionPanel = null;
-            let activeEmojiPicker = null;
-            let activeMessageElement = null;
-
-            // Current photo data
-            let currentPhotoData = null;
-
-            // Track scroll position
-            let isScrolledToBottom = true;
-            let scrollDebounceTimer;
-
-            // Emoji categories
-            const emojisByCategory = {
-                recent: ['👍', '❤️', '😂', '🔥', '😍', '🎉', '🙏', '👏', '🥰', '😊'],
-                smileys: ['😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗', '☺️', '😚', '😙', '🥲'],
-                people: ['👋', '🤚', '🖐️', '✋', '🖖', '👌', '🤌', '🤏', '✌️', '🤞', '🤟', '🤘', '🤙', '👈', '👉', '👆', '🖕', '👇', '☝️', '👍'],
-                animals: ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐻‍❄️', '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐵', '🙈', '🙉', '🙊', '🐒'],
-                food: ['🍎', '🍐', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🫐', '🍈', '🍒', '🍑', '🥭', '🍍', '🥥', '🥝', '🍅', '🍆', '🥑', '🥦'],
-                activities: ['⚽', '🏀', '🏈', '⚾', '🥎', '🎾', '🏐', '🏉', '🥏', '🎱', '🪀', '🏓', '🏸', '🏒', '🏑', '🥍', '🏏', '🪃', '🥅', '⛳'],
-                travel: ['🚗', '🚕', '🚙', '🚌', '🚎', '🏎️', '🚓', '🚑', '🚒', '🚐', '🛻', '🚚', '🚛', '🚜', '🦯', '🦽', '🦼', '🛴', '🚲', '🛵'],
-                objects: ['💡', '🔦', '🧯', '🛢️', '💸', '💵', '💴', '💶', '💷', '💰', '💳', '💎', '⚖️', '🔧', '🔨', '⚒️', '🛠️', '⛏️', '🪓', '🔩'],
-                symbols: ['❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '💔', '❣️', '💕', '💞', '💓', '💗', '💖', '💘', '💝', '💟', '☮️'],
-                flags: ['🏁', '🚩', '🎌', '🏴', '🏳️', '🏳️‍🌈', '🏳️‍⚧️', '🏴‍☠️', '🇦🇨', '🇦🇩', '🇦🇪', '🇦🇫', '🇦🇬', '🇦🇮', '🇦🇱', '🇦🇲', '🇦🇴', '🇦🇶', '🇦🇷', '🇦🇸']
-            };
-
-            // Initialize the app
-            function init() {
-                // Check for existing theme preference
-                const theme = localStorage.getItem('samia_theme');
-                if (theme === 'dark') {
-                    document.body.classList.add('dark-mode');
-                    themeIcon.classList.remove('fa-moon');
-                    themeIcon.classList.add('fa-sun');
-                }
-
-                // Initialize emoji picker
-                initEmojiPicker();
-
-                // Start the chat
-                initChat();
-
-                // Setup event listeners
-                setupEventListeners();
+        // Initialize the app
+        function init() {
+            // Check for existing theme preference
+            if (localStorage.getItem('samia_theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
             }
 
             // Initialize emoji picker
-            function initEmojiPicker() {
-                populateEmojiContainer('recent');
+            initEmojiPicker();
 
-                emojiPickerTemplate.querySelectorAll('.emoji-category').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const category = this.getAttribute('data-category');
-                        emojiPickerTemplate.querySelectorAll('.emoji-category').forEach(el => {
-                            el.classList.remove('active');
-                        });
-                        this.classList.add('active');
-                        populateEmojiContainer(category);
-                    });
-                });
-            }
-
-            function populateEmojiContainer(category) {
-                emojiContainer.innerHTML = '';
-                emojisByCategory[category].forEach(emoji => {
-                    const btn = document.createElement('button');
-                    btn.className = 'emoji-btn';
-                    btn.textContent = emoji;
-                    btn.setAttribute('aria-label', `${emoji} emoji`);
-                    btn.addEventListener('click', function() {
-                        if (activeMessageElement) {
-                            addReactionToMessage(activeMessageElement, emoji);
-                            hideEmojiPicker();
-                            hideReactionPanel();
-                        }
-                    });
-                    emojiContainer.appendChild(btn);
-                });
-            }
-
-            // Initialize the chat
-            async function initChat() {
-                await sendToGemini(`Start the conversation as my girlfriend ${gfName}. Remember my name is ${userName}.`);
-            }
+            // Start the chat
+            initChat();
 
             // Setup event listeners
-            function setupEventListeners() {
-                // Input field auto-resize
-                messageInput.addEventListener('input', function() {
-                    this.style.height = 'auto';
-                    this.style.height = (this.scrollHeight) + 'px';
-                    const isEmpty = this.value.trim() === '';
-                    sendButton.disabled = isEmpty && !currentPhotoData;
-                    const charCount = this.value.length;
-                    charCounter.textContent = `${charCount}/1000`;
-                    charCounter.classList.toggle('visible', charCount > 0);
-                    charCounter.classList.toggle('warning', charCount > 800);
-                    charCounter.classList.toggle('error', charCount > 950);
+            setupEventListeners();
+        }
+
+        // Initialize emoji picker
+        function initEmojiPicker() {
+            populateEmojiContainer('recent');
+
+            emojiPickerTemplate.querySelectorAll('.emoji-category').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const category = this.getAttribute('data-category');
+                    emojiPickerTemplate.querySelectorAll('.emoji-category').forEach(el => {
+                        el.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    populateEmojiContainer(category);
                 });
+            });
+        }
 
-                // Send message on Enter
-                messageInput.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        if (!sendButton.disabled) {
-                            sendMessage();
-                        }
-                    }
-                });
-
-                // Send button click
-                sendButton.addEventListener('click', function() {
-                    if (!this.disabled) {
-                        sendMessage();
-                    }
-                });
-
-                // Scroll to bottom button
-                scrollToBottomBtn.addEventListener('click', function() {
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                });
-
-                // Scroll event for showing/hiding scroll-to-bottom button
-                chatMessages.addEventListener('scroll', function() {
-                    clearTimeout(scrollDebounceTimer);
-                    scrollDebounceTimer = setTimeout(() => {
-                        const threshold = 100;
-                        const distanceFromBottom = chatMessages.scrollHeight - chatMessages.clientHeight - chatMessages.scrollTop;
-                        isScrolledToBottom = distanceFromBottom < threshold;
-                        scrollToBottomBtn.classList.toggle('visible', !isScrolledToBottom);
-                    }, 100);
-                });
-
-                // Theme toggle
-                themeToggle.addEventListener('click', function() {
-                    document.body.classList.toggle('dark-mode');
-                    const isDark = document.body.classList.contains('dark-mode');
-                    localStorage.setItem('samia_theme', isDark ? 'dark' : 'light');
-                    themeIcon.classList.toggle('fa-moon', !isDark);
-                    themeIcon.classList.toggle('fa-sun', isDark);
-                });
-
-                // Back button
-                backButton.addEventListener('click', function() {
-                    window.location.href = 'index.html';
-                });
-
-                // Photo button
-                photoButton.addEventListener('click', function() {
-                    photoInput.click();
-                });
-
-                // Photo input change
-                photoInput.addEventListener('change', function(e) {
-                    if (e.target.files && e.target.files[0]) {
-                        const file = e.target.files[0];
-                        if (file.size > 5 * 1024 * 1024) {
-                            addMessage({error: true, message: "Please select an image smaller than 5MB."}, false, true);
-                            return;
-                        }
-                        if (!file.type.startsWith('image/')) {
-                            addMessage({error: true, message: "Please select a valid image file."}, false, true);
-                            return;
-                        }
-
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            photoPreviewImage.src = e.target.result;
-                            photoPreviewContainer.classList.add('visible');
-                            currentPhotoData = e.target.result;
-                            sendButton.disabled = false;
-                        };
-                        reader.onerror = function() {
-                            addMessage({error: true, message: "Error reading the image file. Please try again."}, false, true);
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                });
-
-                // Photo preview close
-                photoPreviewClose.addEventListener('click', function() {
-                    photoPreviewContainer.classList.remove('visible');
-                    setTimeout(() => {
-                        photoPreviewImage.src = '';
-                        currentPhotoData = null;
-                        sendButton.disabled = messageInput.value.trim() === '';
-                    }, 300);
-                });
-
-                // Photo preview cancel
-                photoPreviewCancel.addEventListener('click', function() {
-                    photoPreviewContainer.classList.remove('visible');
-                    setTimeout(() => {
-                        photoPreviewImage.src = '';
-                        currentPhotoData = null;
-                        sendButton.disabled = messageInput.value.trim() === '';
-                    }, 300);
-                });
-
-                // Photo preview send
-                photoPreviewSend.addEventListener('click', function() {
-                    photoPreviewContainer.classList.remove('visible');
-                    if (currentPhotoData) {
-                        sendMessage(true);
-                    } else {
-                        addMessage({error: true, message: "Error processing photo. Please try again."}, false, true);
-                    }
-                });
-
-                // Image preview modal
-                imagePreviewClose.addEventListener('click', closeImagePreview);
-                imagePreviewModal.addEventListener('click', function(e) {
-                    if (e.target === imagePreviewModal) {
-                        closeImagePreview();
-                    }
-                });
-
-                // Close emoji picker and reaction panel when clicking elsewhere
-                document.addEventListener('click', function(e) {
-                    if (!e.target.closest('.emoji-picker') && !e.target.closest('.reaction-btn')) {
+        function populateEmojiContainer(category) {
+            emojiContainer.innerHTML = '';
+            emojisByCategory[category].forEach(emoji => {
+                const btn = document.createElement('button');
+                btn.className = 'emoji-btn';
+                btn.textContent = emoji;
+                btn.setAttribute('aria-label', `${emoji} emoji`);
+                btn.addEventListener('click', function() {
+                    if (activeMessageElement) {
+                        addReactionToMessage(activeMessageElement, emoji);
                         hideEmojiPicker();
-                    }
-                    if (!e.target.closest('.reaction-panel') && !e.target.closest('.message')) {
                         hideReactionPanel();
                     }
                 });
-            }
+                emojiContainer.appendChild(btn);
+            });
+        }
 
-            // Send message function
-            function sendMessage(withPhoto = false) {
-                const messageText = messageInput.value.trim();
-                if (!messageText && !withPhoto) return;
+        // Initialize the chat
+        async function initChat() {
+            await sendToGemini(`Start the conversation as my girlfriend ${gfName}. Remember my name is ${userName}.`);
+        }
 
-                conversationHistory.push({
-                    text: messageText,
-                    isUser: true,
-                    timestamp: new Date(),
-                    photoData: withPhoto ? currentPhotoData : null
-                });
+        // Setup event listeners
+        function setupEventListeners() {
+            // Input field auto-resize
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+                const isEmpty = this.value.trim() === '';
+                sendButton.disabled = isEmpty && !currentPhotoData;
+                const charCount = this.value.length;
+                charCounter.textContent = `${charCount}/1000`;
+                charCounter.classList.toggle('visible', charCount > 0);
+                charCounter.classList.toggle('warning', charCount > 800);
+                charCounter.classList.toggle('error', charCount > 950);
+            });
 
-                const messageContainer = addMessage(
-                    messageText, 
-                    true, 
-                    false, 
-                    false, 
-                    withPhoto ? [currentPhotoData] : null,
-                    true
-                );
-
-                messageInput.value = '';
-                messageInput.style.height = 'auto';
-                sendButton.disabled = true;
-                charCounter.classList.remove('visible');
-
-                sendToGemini(messageText, withPhoto ? currentPhotoData : null);
-
-                if (withPhoto) {
-                    currentPhotoData = null;
-                }
-
-                setTimeout(() => {
-                    if (messageContainer) {
-                        const messageElement = messageContainer.querySelector('.message');
-                        if (messageElement) {
-                            messageElement.classList.remove('sending-message');
-                            messageElement.classList.add('message-sent');
-                        }
-                    }
-                }, 300);
-            }
-
-            // Format messages for API
-            function formatMessagesForAPI(messageText, photoData) {
-                const formattedConversation = [];
-                formattedConversation.push({
-                    role: "user",
-                    parts: [{ text: basePrompt || `You are ${gfNameFull} (nickname: ${gfName}), a 19-year-old Bangladeshi virtual girlfriend. Be sweet, romantic, and sometimes flirty. Mix Romanized Bangla (70%) with English (30%). Keep responses short (3-4 lines).` }]
-                });
-                formattedConversation.push({
-                    role: "model",
-                    parts: [{ text: `I'll be ${gfName}, your Bangladeshi girlfriend. I'll respond as described.` }]
-                });
-
-                const recentHistory = conversationHistory.slice(-10);
-                for (const message of recentHistory) {
-                    if (message.isUser) {
-                        const userParts = [{ text: message.text || "" }];
-                        if (message.photoData) {
-                            userParts.push({ inline_data: { mime_type: "image/jpeg", data: message.photoData.split(',')[1] } });
-                        }
-                        formattedConversation.push({ role: "user", parts: userParts });
-                    } else {
-                        const botParts = [{ text: message.text }];
-                        if (message.images && message.images.length > 0) {
-                            message.images.forEach(imgData => {
-                                botParts.push({ inline_data: { mime_type: "image/jpeg", data: imgData.split(',')[1] } });
-                            });
-                        }
-                        formattedConversation.push({ role: "model", parts: botParts });
+            // Send message on Enter
+            messageInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    if (!sendButton.disabled) {
+                        sendMessage();
                     }
                 }
+            });
 
-                if (photoData) {
-                    const userParts = [{ text: messageText || "" }];
-                    userParts.push({ inline_data: { mime_type: "image/jpeg", data: photoData.split(',')[1] } });
-                    formattedConversation.push({ role: "user", parts: userParts });
-                } else if (messageText) {
-                    formattedConversation.push({ role: "user", parts: [{ text: messageText }] });
+            // Send button click
+            sendButton.addEventListener('click', function() {
+                if (!this.disabled) {
+                    sendMessage();
                 }
-                return formattedConversation;
-            }
+            });
 
-            // Simplified API call function
-            async function sendToGemini(messageText, photoData = null) {
-                try {
-                    showTyping();
-                    const requestBody = {
-                        contents: formatMessagesForAPI(messageText, photoData),
-                        generationConfig: {temperature: 0.7, topP: 0.95, topK: 40}
+            // Scroll to bottom button
+            scrollToBottomBtn.addEventListener('click', function() {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            });
+
+            // Scroll event for showing/hiding scroll-to-bottom button
+            chatMessages.addEventListener('scroll', function() {
+                clearTimeout(scrollDebounceTimer);
+                scrollDebounceTimer = setTimeout(() => {
+                    const threshold = 100;
+                    const distanceFromBottom = chatMessages.scrollHeight - chatMessages.clientHeight - chatMessages.scrollTop;
+                    isScrolledToBottom = distanceFromBottom < threshold;
+                    scrollToBottomBtn.classList.toggle('visible', !isScrolledToBottom);
+                }, 100);
+            });
+
+            // Theme toggle
+            themeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+                const isDark = document.body.classList.contains('dark-mode');
+                localStorage.setItem('samia_theme', isDark ? 'dark' : 'light');
+                themeIcon.classList.toggle('fa-moon', !isDark);
+                themeIcon.classList.toggle('fa-sun', isDark);
+            });
+
+            // Back button
+            backButton.addEventListener('click', function() {
+                window.location.href = 'index.html';
+            });
+
+            // Photo button
+            photoButton.addEventListener('click', function() {
+                photoInput.click();
+            });
+
+            // Photo input change - UPDATED FOR PROPER PHOTO HANDLING
+            photoInput.addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    const file = e.target.files[0];
+                    
+                    // Check file size (max 5MB)
+                    if (file.size > 5 * 1024 * 1024) {
+                        addMessage({error: true, message: "Please select an image smaller than 5MB."}, false, true);
+                        return;
+                    }
+
+                    // Check file type
+                    if (!file.type.match('image.*')) {
+                        addMessage({error: true, message: "Please select a valid image file."}, false, true);
+                        return;
+                    }
+
+                    const reader = new FileReader();
+
+                    reader.onload = function(e) {
+                        // Show preview
+                        photoPreviewImage.src = e.target.result;
+                        photoPreviewContainer.classList.add('visible');
+                        
+                        // Store the base64 data without the prefix
+                        const base64String = e.target.result.split(',')[1];
+                        currentPhotoData = {
+                            mimeType: file.type,
+                            data: base64String
+                        };
+                        
+                        sendButton.disabled = false;
                     };
 
-                    const response = await fetch(GEMINI_API_ENDPOINT, {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify(requestBody)
-                    });
+                    reader.onerror = function() {
+                        addMessage({error: true, message: "Error reading the image file. Please try again."}, false, true);
+                    };
 
-                    if (!response.ok) {
-                        const errorBody = await response.json();
-                        console.error("API Error Response Body:", errorBody);
-                        throw new Error(`HTTP error! status: ${response.status} - ${errorBody.error.message || 'Unknown error'}`);
-                    }
-                    const data = await response.json();
-                    processResponse(data);
-                } catch (error) {
-                    console.error("API Error:", error);
-                    hideTyping();
-                    const errorContainer = addMessage({
-                        error: true,
-                        message: "Sorry, I'm having trouble responding. Please try again."
-                    }, false, true);
-
-                    const retryButton = document.createElement('button');
-                    retryButton.className = 'button button-primary';
-                    retryButton.textContent = 'Retry';
-                    retryButton.style.marginTop = '8px';
-                    retryButton.addEventListener('click', () => {
-                        const lastMessage = conversationHistory[conversationHistory.length - 1];
-                        if (lastMessage && lastMessage.isUser) {
-                            sendToGemini(lastMessage.text, lastMessage.photoData);
-                            errorContainer.remove();
-                        }
-                    });
-
-                    const errorMessage = errorContainer.querySelector('.message');
-                    if (errorMessage) {
-                        errorMessage.appendChild(retryButton);
-                    }
-
-                    statusElement.innerHTML = `<div class="status-dot"></div>Active now`;
+                    reader.readAsDataURL(file);
                 }
-            }
+            });
 
-            // Process API response
-            function processResponse(data) {
-                hideTyping();
-                try {
-                    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content || !data.candidates[0].content.parts) {
-                        throw new Error('Invalid response format from Gemini API');
-                    }
+            // Photo preview close
+            photoPreviewClose.addEventListener('click', function() {
+                photoPreviewContainer.classList.remove('visible');
+                setTimeout(() => {
+                    photoPreviewImage.src = '';
+                    currentPhotoData = null;
+                    sendButton.disabled = messageInput.value.trim() === '';
+                }, 300);
+            });
 
-                    const responseParts = data.candidates[0].content.parts;
-                    let responseText = '';
-                    let responseImages = [];
+            // Photo preview cancel
+            photoPreviewCancel.addEventListener('click', function() {
+                photoPreviewContainer.classList.remove('visible');
+                setTimeout(() => {
+                    photoPreviewImage.src = '';
+                    currentPhotoData = null;
+                    sendButton.disabled = messageInput.value.trim() === '';
+                }, 300);
+            });
 
-                    responseParts.forEach(part => {
-                        if (part.text) {
-                            responseText += part.text.trim();
-                        } else if (part.inline_data) {
-                            const imageData = `data:${part.inline_data.mime_type};base64,${part.inline_data.data}`;
-                            responseImages.push(imageData);
-                        }
-                    });
-
-                    responseText = responseText.replace(/^(Aiyoo!|Aiyoo|Uff!|Hmph!|Uff|Hmph)(\s+|\s*[!,]\s*)/i, '');
-
-                    conversationHistory.push({
-                        text: responseText,
-                        isUser: false,
-                        timestamp: new Date(),
-                        images: responseImages.length > 0 ? responseImages : null
-                    });
-
-                    addMessageWithTypingAnimation(responseText, responseImages);
-                    setTimeout(updateSeenIndicator, 1000);
-
-                    profilePic.classList.add('message-received');
-                    setTimeout(() => {
-                        profilePic.classList.remove('message-received');
-                    }, 600);
-
-                    statusElement.innerHTML = `<div class="status-dot"></div>Active now`;
-                } catch (error) {
-                    console.error("Response Processing Error:", error);
-                    addMessage({ error: true, message: `Error processing response: ${error.message}` }, false, true);
-                    statusElement.innerHTML = `<div class="status-dot"></div>Active now`;
-                }
-            }
-
-            // Add message with enhanced typing animation
-            function addMessageWithTypingAnimation(text, images = null) {
-                const container = document.createElement('div');
-                container.className = 'message-container bot-message-container';
-
-                const avatarHTML = `
-                    <div class="message-avatar">
-                        <img src="avatar.jpeg" alt="${gfName}'s Avatar" onerror="this.src='https://i.imgur.com/JQJxZOY.jpg'">
-                    </div>
-                `;
-
-                const messageElement = document.createElement('div');
-                messageElement.className = 'message bot-message';
-
-                const timestamp = document.createElement('div');
-                timestamp.className = 'message-time';
-                timestamp.textContent = getCurrentTime();
-                messageElement.appendChild(timestamp);
-
-                container.innerHTML = avatarHTML;
-                container.appendChild(messageElement);
-                chatMessages.appendChild(container);
-
-                if (isScrolledToBottom) {
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }
-
-                const segments = text.split(/(?<=[.!?])\s+/);
-                let currentIndex = 0;
-
-                function typeNextSegment() {
-                    if (currentIndex < segments.length) {
-                        const segment = segments[currentIndex];
-                        const typingContainer = document.createElement('div');
-                        typingContainer.className = 'typing-text-container';
-
-                        const typingText = document.createElement('span');
-                        typingText.className = 'typing-text';
-                        typingText.textContent = segment;
-
-                        const cursor = document.createElement('span');
-                        cursor.className = 'typing-cursor';
-
-                        typingContainer.appendChild(typingText);
-                        typingContainer.appendChild(cursor);
-                        messageElement.appendChild(typingContainer);
-
-                        if (isScrolledToBottom) {
-                            chatMessages.scrollTop = chatMessages.scrollHeight;
-                        }
-
-                        const typingDuration = Math.min(Math.max(segment.length * 30, 500), 2000);
-
-                        setTimeout(() => {
-                            cursor.remove();
-                            typingText.classList.remove('typing-text');
-                            if (currentIndex < segments.length - 1) {
-                                messageElement.appendChild(document.createElement('br'));
-                            }
-                            currentIndex++;
-                            typeNextSegment();
-                        }, typingDuration);
-                    } else {
-                        if (images && images.length > 0) {
-                            images.forEach(imgSrc => {
-                                if (!imgSrc) return;
-                                const img = document.createElement('img');
-                                if (typeof imgSrc === 'string') {
-                                    if (imgSrc.startsWith('data:')) {
-                                        img.src = imgSrc;
-                                    } else if (imgSrc.startsWith('http')) {
-                                        img.src = imgSrc;
-                                    } else {
-                                        img.src = `data:image/jpeg;base64,${imgSrc}`;
-                                    }
-                                } else {
-                                    console.error('Invalid image source:', imgSrc);
-                                    return;
-                                }
-
-                                img.className = 'message-image';
-                                img.alt = `${gfName} sent an image`;
-                                img.style.display = 'block';
-                                img.style.maxWidth = '100%';
-                                img.style.marginTop = '8px';
-                                img.style.marginBottom = '8px';
-                                img.addEventListener('click', () => openImagePreview(img.src));
-                                messageElement.insertBefore(img, timestamp);
-                                console.log('Bot image added to message:', img.src.substring(0, 30) + '...');
-                            });
-                        }
-                        setupMessageDetailsPanel(container, false);
-                        setupMessageReactions(messageElement);
-                    }
-                }
-                typeNextSegment();
-                return container;
-            }
-
-            // Show typing indicator with enhanced animation
-            function showTyping() {
-                statusElement.innerHTML = `<div class="status-dot typing-dot"></div>Typing...`;
-                statusElement.classList.add('typing');
-                profilePic.classList.add('typing');
-
-                const container = document.createElement('div');
-                container.className = 'typing-container';
-                container.id = 'typing-indicator';
-                container.innerHTML = `
-                    <div class="message-avatar">
-                        <img src="avatar.jpeg" alt="${gfName}'s Avatar" onerror="this.src='https://i.imgur.com/JQJxZOY.jpg'">
-                    </div>
-                    <div class="typing-indicator">
-                        <div class="typing-dot"></div>
-                        <div class="typing-dot"></div>
-                        <div class="typing-dot"></div>
-                    </div>
-                `;
-
-                chatMessages.appendChild(container);
-
-                if (isScrolledToBottom) {
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }
-
-                return container;
-            }
-
-            function hideTyping() {
-                statusElement.innerHTML = `<div class="status-dot"></div>Active now`;
-                statusElement.classList.remove('typing');
-                const typingIndicator = document.getElementById('typing-indicator');
-                if (typingIndicator) {
-                    typingIndicator.remove();
-                }
-                profilePic.classList.remove('typing');
-            }
-
-            // Add message to the chat
-            function addMessage(message, isUser = false, isError = false, withAnimation = true, images = null, isSending = false) {
-                const container = document.createElement('div');
-                container.className = isUser ? 'message-container user-message-container' : 'message-container bot-message-container';
-
-                let messageHTML = '';
-                if (!isUser) {
-                    messageHTML += `
-                        <div class="message-avatar">
-                            <img src="avatar.jpeg" alt="${gfName}'s Avatar" onerror="this.src='https://i.imgur.com/JQJxZOY.jpg'">
-                        </div>
-                    `;
-                }
-
-                const messageClass = isUser ? 'message user-message' : 'message bot-message';
-                const errorClass = isError ? ' error-message' : '';
-                const sendingClass = isSending ? ' sending-message' : '';
-
-                let messageContent = '';
-                if (isError) {
-                    messageContent = message.message || 'An error occurred';
-                } else if (typeof message === 'string') {
-                    messageContent = isUser ? message : marked.parse(message);
+            // Photo preview send
+            photoPreviewSend.addEventListener('click', function() {
+                photoPreviewContainer.classList.remove('visible');
+                if (currentPhotoData) {
+                    sendMessage(true);
                 } else {
-                    messageContent = message;
+                    addMessage({error: true, message: "Error processing photo. Please try again."}, false, true);
                 }
+            });
 
-                messageHTML += `<div class="${messageClass}${errorClass}${sendingClass}">`;
-                messageHTML += messageContent;
-                messageHTML += `<div class="message-time">${getCurrentTime()}</div>`;
-                messageHTML += `</div>`;
-
-                container.innerHTML = messageHTML;
-                chatMessages.appendChild(container);
-
-                const messageElement = container.querySelector('.message');
-                if (images && images.length > 0 && messageElement) {
-                    images.forEach(imgSrc => {
-                        if (!imgSrc) return;
-                        const img = document.createElement('img');
-                        if (typeof imgSrc === 'string') {
-                            if (imgSrc.startsWith('data:')) {
-                                img.src = imgSrc;
-                            } else if (imgSrc.startsWith('http')) {
-                                img.src = imgSrc;
-                            } else {
-                                img.src = `data:image/jpeg;base64,${imgSrc}`;
-                            }
-                        } else {
-                            console.error('Invalid image source:', imgSrc);
-                            return;
-                        }
-
-                        img.className = 'message-image';
-                        img.alt = isUser ? 'You sent an image' : `${gfName} sent an image`;
-                        img.style.display = 'block';
-                        img.style.maxWidth = '100%';
-                        img.style.marginTop = '8px';
-                        img.style.marginBottom = '8px';
-                        img.addEventListener('click', () => openImagePreview(img.src));
-
-                        const timestamp = messageElement.querySelector('.message-time');
-                        if (timestamp) {
-                            messageElement.insertBefore(img, timestamp);
-                        } else {
-                            messageElement.appendChild(img);
-                        }
-                        console.log('Image added to message:', img.src.substring(0, 30) + '...');
-                    });
+            // Image preview modal
+            imagePreviewClose.addEventListener('click', closeImagePreview);
+            imagePreviewModal.addEventListener('click', function(e) {
+                if (e.target === imagePreviewModal) {
+                    closeImagePreview();
                 }
+            });
 
-                if (isScrolledToBottom) {
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
+            // Close emoji picker and reaction panel when clicking elsewhere
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.emoji-picker') && !e.target.closest('.reaction-btn')) {
+                    hideEmojiPicker();
                 }
-
-                if (!isError && !isSending) {
-                    setupMessageDetailsPanel(container, isUser);
-                    setupMessageReactions(messageElement);
+                if (!e.target.closest('.reaction-panel') && !e.target.closest('.message')) {
+                    hideReactionPanel();
                 }
+            });
+        }
 
-                return container;
+        // Send message function
+        function sendMessage(withPhoto = false) {
+            const messageText = messageInput.value.trim();
+
+            // Don't send empty messages unless there's a photo
+            if (!messageText && !withPhoto) return;
+
+            // Add to conversation history
+            conversationHistory.push({
+                text: messageText,
+                isUser: true,
+                timestamp: new Date(),
+                photoData: withPhoto ? currentPhotoData : null
+            });
+
+            // Add user message to UI with sending state
+            const messageContainer = addMessage(
+                messageText, 
+                true, 
+                false, 
+                false, 
+                withPhoto ? [currentPhotoData] : null,
+                true
+            );
+
+            // Clear input and reset height
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+            sendButton.disabled = true;
+            charCounter.classList.remove('visible');
+
+            // Send to API
+            sendToGemini(messageText, withPhoto ? currentPhotoData : null);
+
+            // Reset photo data
+            if (withPhoto) {
+                currentPhotoData = null;
+                photoInput.value = ''; // Clear the file input
             }
 
-            // Update the seen indicator at the bottom of the chat
-            function updateSeenIndicator() {
-                if (lastSeenIndicator) {
-                    lastSeenIndicator.remove();
+            // After a short delay, remove sending state
+            setTimeout(() => {
+                if (messageContainer) {
+                    const messageElement = messageContainer.querySelector('.message');
+                    if (messageElement) {
+                        messageElement.classList.remove('sending-message');
+                        messageElement.classList.add('message-sent');
+                    }
+                }
+            }, 300);
+        }
+
+        // Format messages for API
+        function formatMessagesForAPI(messageText, photoData = null) {
+            const formattedConversation = [];
+
+            // Add the base prompt as system message
+            formattedConversation.push({
+                role: "user",
+                parts: [{ text: basePrompt || `You are ${gfNameFull} (nickname: ${gfName}), a 19-year-old Bangladeshi virtual girlfriend. Be sweet, romantic, and sometimes flirty. Mix Romanized Bangla (70%) with English (30%). Keep responses short (3-4 lines).` }]
+            });
+
+            formattedConversation.push({
+                role: "model",
+                parts: [{ text: `I'll be ${gfName}, your Bangladeshi girlfriend. I'll respond as described.` }]
+            });
+
+            // Add conversation history (limited to last 10 messages)
+            const recentHistory = conversationHistory.slice(-10);
+            for (const message of recentHistory) {
+                if (message.isUser) {
+                    const userParts = [{ text: message.text || "" }];
+                    if (message.photoData) {
+                        userParts.push({
+                            inline_data: {
+                                mime_type: message.photoData.mimeType,
+                                data: message.photoData.data
+                            }
+                        });
+                    }
+                    formattedConversation.push({ role: "user", parts: userParts });
+                } else {
+                    const botParts = [{ text: message.text }];
+                    if (message.images && message.images.length > 0) {
+                        message.images.forEach(imgData => {
+                            botParts.push({
+                                inline_data: {
+                                    mime_type: imgData.mimeType,
+                                    data: imgData.data
+                                }
+                            });
+                        });
+                    }
+                    formattedConversation.push({ role: "model", parts: botParts });
+                }
+            }
+
+            // If current message has a photo, add it
+            if (photoData) {
+                const userParts = [{ text: messageText || "" }];
+                userParts.push({
+                    inline_data: {
+                        mime_type: photoData.mimeType,
+                        data: photoData.data
+                    }
+                });
+                formattedConversation.push({ role: "user", parts: userParts });
+            } else if (messageText) {
+                // Only add text if no photo and text exists
+                formattedConversation.push({ role: "user", parts: [{ text: messageText }] });
+            }
+            
+            return formattedConversation;
+        }
+
+        // Simplified API call function
+        async function sendToGemini(messageText, photoData = null) {
+            try {
+                showTyping();
+                const requestBody = {
+                    contents: formatMessagesForAPI(messageText, photoData),
+                    generationConfig: {temperature: 0.7, topP: 0.95, topK: 40}
+                };
+
+                const response = await fetch(GEMINI_API_ENDPOINT, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (!response.ok) {
+                    const errorBody = await response.json();
+                    console.error("API Error Response Body:", errorBody);
+                    throw new Error(`HTTP error! status: ${response.status} - ${errorBody.error.message || 'Unknown error'}`);
+                }
+                const data = await response.json();
+                processResponse(data);
+            } catch (error) {
+                console.error("API Error:", error);
+                hideTyping();
+                const errorContainer = addMessage({
+                    error: true,
+                    message: "Sorry, I'm having trouble responding. Please try again."
+                }, false, true);
+
+                const retryButton = document.createElement('button');
+                retryButton.className = 'button button-primary';
+                retryButton.textContent = 'Retry';
+                retryButton.style.marginTop = '8px';
+                retryButton.addEventListener('click', () => {
+                    const lastMessage = conversationHistory[conversationHistory.length - 1];
+                    if (lastMessage && lastMessage.isUser) {
+                        sendToGemini(lastMessage.text, lastMessage.photoData);
+                        errorContainer.remove();
+                    }
+                });
+
+                const errorMessage = errorContainer.querySelector('.message');
+                if (errorMessage) {
+                    errorMessage.appendChild(retryButton);
                 }
 
-                if (conversationHistory.length > 0) {
-                    lastSeenIndicator = document.createElement('div');
-                    lastSeenIndicator.className = 'seen-indicator';
-                    lastSeenIndicator.innerHTML = `
-                        Seen
-                        <img src="avatar.jpeg" alt="Seen" onerror="this.src='https://i.imgur.com/JQJxZOY.jpg'">
-                    `;
-                    chatMessages.appendChild(lastSeenIndicator);
+                statusElement.innerHTML = `<div class="status-dot"></div>Active now`;
+            }
+        }
+
+        // Process API response
+        function processResponse(data) {
+            hideTyping();
+            try {
+                if (!data.candidates || !data.candidates[0] || !data.candidates[0].content || !data.candidates[0].content.parts) {
+                    throw new Error('Invalid response format from Gemini API');
+                }
+
+                const responseParts = data.candidates[0].content.parts;
+                let responseText = '';
+                let responseImages = [];
+
+                responseParts.forEach(part => {
+                    if (part.text) {
+                        responseText += part.text.trim();
+                    } else if (part.inline_data) {
+                        const imageData = {
+                            mimeType: part.inline_data.mime_type,
+                            data: part.inline_data.data
+                        };
+                        responseImages.push(`data:${imageData.mimeType};base64,${imageData.data}`);
+                    }
+                });
+
+                responseText = responseText.replace(/^(Aiyoo!|Aiyoo|Uff!|Hmph!|Uff|Hmph)(\s+|\s*[!,]\s*)/i, '');
+
+                conversationHistory.push({
+                    text: responseText,
+                    isUser: false,
+                    timestamp: new Date(),
+                    images: responseImages.length > 0 ? responseImages : null
+                });
+
+                addMessageWithTypingAnimation(responseText, responseImages);
+                setTimeout(updateSeenIndicator, 1000);
+
+                profilePic.classList.add('message-received');
+                setTimeout(() => {
+                    profilePic.classList.remove('message-received');
+                }, 600);
+
+                statusElement.innerHTML = `<div class="status-dot"></div>Active now`;
+            } catch (error) {
+                console.error("Response Processing Error:", error);
+                addMessage({ error: true, message: `Error processing response: ${error.message}` }, false, true);
+                statusElement.innerHTML = `<div class="status-dot"></div>Active now`;
+            }
+        }
+
+        // Add message with enhanced typing animation
+        function addMessageWithTypingAnimation(text, images = null) {
+            const container = document.createElement('div');
+            container.className = 'message-container bot-message-container';
+
+            const avatarHTML = `
+                <div class="message-avatar">
+                    <img src="avatar.jpeg" alt="${gfName}'s Avatar" onerror="this.src='https://i.imgur.com/JQJxZOY.jpg'">
+                </div>
+            `;
+
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message bot-message';
+
+            const timestamp = document.createElement('div');
+            timestamp.className = 'message-time';
+            timestamp.textContent = getCurrentTime();
+            messageElement.appendChild(timestamp);
+
+            container.innerHTML = avatarHTML;
+            container.appendChild(messageElement);
+            chatMessages.appendChild(container);
+
+            if (isScrolledToBottom) {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            const segments = text.split(/(?<=[.!?])\s+/);
+            let currentIndex = 0;
+
+            function typeNextSegment() {
+                if (currentIndex < segments.length) {
+                    const segment = segments[currentIndex];
+                    const typingContainer = document.createElement('div');
+                    typingContainer.className = 'typing-text-container';
+
+                    const typingText = document.createElement('span');
+                    typingText.className = 'typing-text';
+                    typingText.textContent = segment;
+
+                    const cursor = document.createElement('span');
+                    cursor.className = 'typing-cursor';
+
+                    typingContainer.appendChild(typingText);
+                    typingContainer.appendChild(cursor);
+                    messageElement.appendChild(typingContainer);
 
                     if (isScrolledToBottom) {
                         chatMessages.scrollTop = chatMessages.scrollHeight;
                     }
+
+                    const typingDuration = Math.min(Math.max(segment.length * 30, 500), 2000);
+
+                    setTimeout(() => {
+                        cursor.remove();
+                        typingText.classList.remove('typing-text');
+                        if (currentIndex < segments.length - 1) {
+                            messageElement.appendChild(document.createElement('br'));
+                        }
+                        currentIndex++;
+                        typeNextSegment();
+                    }, typingDuration);
+                } else {
+                    if (images && images.length > 0) {
+                        images.forEach(imgSrc => {
+                            if (!imgSrc) return;
+                            const img = document.createElement('img');
+                            if (typeof imgSrc === 'string') {
+                                if (imgSrc.startsWith('data:')) {
+                                    img.src = imgSrc;
+                                } else if (imgSrc.startsWith('http')) {
+                                    img.src = imgSrc;
+                                } else {
+                                    img.src = `data:image/jpeg;base64,${imgSrc}`;
+                                }
+                            } else {
+                                console.error('Invalid image source:', imgSrc);
+                                return;
+                            }
+
+                            img.className = 'message-image';
+                            img.alt = `${gfName} sent an image`;
+                            img.style.display = 'block';
+                            img.style.maxWidth = '100%';
+                            img.style.marginTop = '8px';
+                            img.style.marginBottom = '8px';
+                            img.addEventListener('click', () => openImagePreview(img.src));
+                            messageElement.insertBefore(img, timestamp);
+                            console.log('Bot image added to message:', img.src.substring(0, 30) + '...');
+                        });
+                    }
+                    setupMessageDetailsPanel(container, false);
+                    setupMessageReactions(messageElement);
                 }
             }
+            typeNextSegment();
+            return container;
+        }
 
-            // Handle message details panel
-            function setupMessageDetailsPanel(container, isUser) {
-                const message = container.querySelector('.message');
-                const detailsPanel = document.createElement('div');
-                detailsPanel.className = 'message-details';
-                detailsPanel.innerHTML = `Sent at ${getCurrentTime()} • Seen`;
-                container.appendChild(detailsPanel);
+        // Show typing indicator with enhanced animation
+        function showTyping() {
+            statusElement.innerHTML = `<div class="status-dot typing-dot"></div>Typing...`;
+            statusElement.classList.add('typing');
+            profilePic.classList.add('typing');
 
-                message.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    document.querySelectorAll('.message-container.show-details').forEach(el => {
-                        if (el !== container) {
-                            el.classList.remove('show-details');
+            const container = document.createElement('div');
+            container.className = 'typing-container';
+            container.id = 'typing-indicator';
+            container.innerHTML = `
+                <div class="message-avatar">
+                    <img src="avatar.jpeg" alt="${gfName}'s Avatar" onerror="this.src='https://i.imgur.com/JQJxZOY.jpg'">
+                </div>
+                <div class="typing-indicator">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            `;
+
+            chatMessages.appendChild(container);
+
+            if (isScrolledToBottom) {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            return container;
+        }
+
+        function hideTyping() {
+            statusElement.innerHTML = `<div class="status-dot"></div>Active now`;
+            statusElement.classList.remove('typing');
+            const typingIndicator = document.getElementById('typing-indicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+            profilePic.classList.remove('typing');
+        }
+
+        // Add message to the chat
+        function addMessage(message, isUser = false, isError = false, withAnimation = true, images = null, isSending = false) {
+            const container = document.createElement('div');
+            container.className = isUser ? 'message-container user-message-container' : 'message-container bot-message-container';
+
+            let messageHTML = '';
+            if (!isUser) {
+                messageHTML += `
+                    <div class="message-avatar">
+                        <img src="avatar.jpeg" alt="${gfName}'s Avatar" onerror="this.src='https://i.imgur.com/JQJxZOY.jpg'">
+                    </div>
+                `;
+            }
+
+            const messageClass = isUser ? 'message user-message' : 'message bot-message';
+            const errorClass = isError ? ' error-message' : '';
+            const sendingClass = isSending ? ' sending-message' : '';
+
+            let messageContent = '';
+            if (isError) {
+                messageContent = message.message || 'An error occurred';
+            } else if (typeof message === 'string') {
+                messageContent = isUser ? message : marked.parse(message);
+            } else {
+                messageContent = message;
+            }
+
+            messageHTML += `<div class="${messageClass}${errorClass}${sendingClass}">`;
+            messageHTML += messageContent;
+            messageHTML += `<div class="message-time">${getCurrentTime()}</div>`;
+            messageHTML += `</div>`;
+
+            container.innerHTML = messageHTML;
+            chatMessages.appendChild(container);
+
+            const messageElement = container.querySelector('.message');
+            if (images && images.length > 0 && messageElement) {
+                images.forEach(imgSrc => {
+                    if (!imgSrc) return;
+                    const img = document.createElement('img');
+                    if (typeof imgSrc === 'string') {
+                        if (imgSrc.startsWith('data:')) {
+                            img.src = imgSrc;
+                        } else if (imgSrc.startsWith('http')) {
+                            img.src = imgSrc;
+                        } else {
+                            img.src = `data:image/jpeg;base64,${imgSrc}`;
                         }
-                    });
-                    container.classList.toggle('show-details');
-                });
+                    } else {
+                        console.error('Invalid image source:', imgSrc);
+                        return;
+                    }
 
-                document.addEventListener('click', function() {
-                    container.classList.remove('show-details');
+                    img.className = 'message-image';
+                    img.alt = isUser ? 'You sent an image' : `${gfName} sent an image`;
+                    img.style.display = 'block';
+                    img.style.maxWidth = '100%';
+                    img.style.marginTop = '8px';
+                    img.style.marginBottom = '8px';
+                    img.addEventListener('click', () => openImagePreview(img.src));
+
+                    const timestamp = messageElement.querySelector('.message-time');
+                    if (timestamp) {
+                        messageElement.insertBefore(img, timestamp);
+                    } else {
+                        messageElement.appendChild(img);
+                    }
+                    console.log('Image added to message:', img.src.substring(0, 30) + '...');
                 });
             }
 
-            // Setup message reactions
-            function setupMessageReactions(messageElement) {
-                const reactionPanel = reactionPanelTemplate.cloneNode(true);
-                reactionPanel.id = '';
-                reactionPanel.style.display = 'flex';
-                messageElement.appendChild(reactionPanel);
+            if (isScrolledToBottom) {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
 
-                let longPressTimer;
-                let longPressStarted = false;
+            if (!isError && !isSending) {
+                setupMessageDetailsPanel(container, isUser);
+                setupMessageReactions(messageElement);
+            }
 
-                messageElement.addEventListener('touchstart', function(e) {
-                    longPressStarted = true;
-                    longPressTimer = setTimeout(() => {
-                        if (longPressStarted) {
-                            e.preventDefault();
-                            showReactionPanel(messageElement);
-                        }
-                    }, 500);
+            return container;
+        }
+
+        // Update the seen indicator at the bottom of the chat
+        function updateSeenIndicator() {
+            if (lastSeenIndicator) {
+                lastSeenIndicator.remove();
+            }
+
+            if (conversationHistory.length > 0) {
+                lastSeenIndicator = document.createElement('div');
+                lastSeenIndicator.className = 'seen-indicator';
+                lastSeenIndicator.innerHTML = `
+                    Seen
+                    <img src="avatar.jpeg" alt="Seen" onerror="this.src='https://i.imgur.com/JQJxZOY.jpg'">
+                `;
+                chatMessages.appendChild(lastSeenIndicator);
+
+                if (isScrolledToBottom) {
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+            }
+        }
+
+        // Handle message details panel
+        function setupMessageDetailsPanel(container, isUser) {
+            const message = container.querySelector('.message');
+            const detailsPanel = document.createElement('div');
+            detailsPanel.className = 'message-details';
+            detailsPanel.innerHTML = `Sent at ${getCurrentTime()} • Seen`;
+            container.appendChild(detailsPanel);
+
+            message.addEventListener('click', function(e) {
+                e.stopPropagation();
+                document.querySelectorAll('.message-container.show-details').forEach(el => {
+                    if (el !== container) {
+                        el.classList.remove('show-details');
+                    }
                 });
+                container.classList.toggle('show-details');
+            });
 
-                messageElement.addEventListener('touchmove', function() {
-                    longPressStarted = false;
-                    clearTimeout(longPressTimer);
-                });
+            document.addEventListener('click', function() {
+                container.classList.remove('show-details');
+            });
+        }
 
-                messageElement.addEventListener('touchend', function() {
-                    longPressStarted = false;
-                    clearTimeout(longPressTimer);
-                });
+        // Setup message reactions
+        function setupMessageReactions(messageElement) {
+            const reactionPanel = reactionPanelTemplate.cloneNode(true);
+            reactionPanel.id = '';
+            reactionPanel.style.display = 'flex';
+            messageElement.appendChild(reactionPanel);
 
-                let lastTap = 0;
-                messageElement.addEventListener('touchend', function(e) {
-                    const currentTime = new Date().getTime();
-                    const tapLength = currentTime - lastTap;
-                    if (tapLength < 300 && tapLength > 0) {
+            let longPressTimer;
+            let longPressStarted = false;
+
+            messageElement.addEventListener('touchstart', function(e) {
+                longPressStarted = true;
+                longPressTimer = setTimeout(() => {
+                    if (longPressStarted) {
                         e.preventDefault();
                         showReactionPanel(messageElement);
                     }
-                    lastTap = currentTime;
-                });
+                }, 500);
+            });
 
-                messageElement.addEventListener('dblclick', function(e) {
+            messageElement.addEventListener('touchmove', function() {
+                longPressStarted = false;
+                clearTimeout(longPressTimer);
+            });
+
+            messageElement.addEventListener('touchend', function() {
+                longPressStarted = false;
+                clearTimeout(longPressTimer);
+            });
+
+            let lastTap = 0;
+            messageElement.addEventListener('touchend', function(e) {
+                const currentTime = new Date().getTime();
+                const tapLength = currentTime - lastTap;
+                if (tapLength < 300 && tapLength > 0) {
                     e.preventDefault();
                     showReactionPanel(messageElement);
-                });
-
-                reactionPanel.querySelectorAll('.reaction-btn').forEach(btn => {
-                    btn.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        const emoji = this.getAttribute('data-emoji');
-                        if (emoji === '+') {
-                            showEmojiPicker(messageElement);
-                        } else {
-                            addReactionToMessage(messageElement, emoji);
-                            hideReactionPanel();
-                        }
-                    });
-                });
-            }
-
-            // Show reaction panel
-            function showReactionPanel(messageElement) {
-                hideReactionPanel();
-                hideEmojiPicker();
-                const reactionPanel = messageElement.querySelector('.reaction-panel');
-                if (reactionPanel) {
-                    reactionPanel.classList.add('visible');
-                    activeReactionPanel = reactionPanel;
-                    activeMessageElement = messageElement;
                 }
-            }
+                lastTap = currentTime;
+            });
 
-            // Hide reaction panel
-            function hideReactionPanel() {
-                if (activeReactionPanel) {
-                    activeReactionPanel.classList.remove('visible');
-                    activeReactionPanel = null;
-                }
-            }
+            messageElement.addEventListener('dblclick', function(e) {
+                e.preventDefault();
+                showReactionPanel(messageElement);
+            });
 
-            // Show emoji picker
-            function showEmojiPicker(messageElement) {
-                hideReactionPanel();
-                const emojiPicker = emojiPickerTemplate.cloneNode(true);
-                emojiPicker.id = '';
-                emojiPicker.style.display = 'block';
-                messageElement.appendChild(emojiPicker);
-                setTimeout(() => {
-                    emojiPicker.classList.add('visible');
-                }, 10);
-                activeEmojiPicker = emojiPicker;
+            reactionPanel.querySelectorAll('.reaction-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const emoji = this.getAttribute('data-emoji');
+                    if (emoji === '+') {
+                        showEmojiPicker(messageElement);
+                    } else {
+                        addReactionToMessage(messageElement, emoji);
+                        hideReactionPanel();
+                    }
+                });
+            });
+        }
+
+        // Show reaction panel
+        function showReactionPanel(messageElement) {
+            hideReactionPanel();
+            hideEmojiPicker();
+            const reactionPanel = messageElement.querySelector('.reaction-panel');
+            if (reactionPanel) {
+                reactionPanel.classList.add('visible');
+                activeReactionPanel = reactionPanel;
                 activeMessageElement = messageElement;
+            }
+        }
 
-                emojiPicker.querySelectorAll('.emoji-category').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const category = this.getAttribute('data-category');
-                        emojiPicker.querySelectorAll('.emoji-category').forEach(el => {
-                            el.classList.remove('active');
+        // Hide reaction panel
+        function hideReactionPanel() {
+            if (activeReactionPanel) {
+                activeReactionPanel.classList.remove('visible');
+                activeReactionPanel = null;
+            }
+        }
+
+        // Show emoji picker
+        function showEmojiPicker(messageElement) {
+            hideReactionPanel();
+            const emojiPicker = emojiPickerTemplate.cloneNode(true);
+            emojiPicker.id = '';
+            emojiPicker.style.display = 'block';
+            messageElement.appendChild(emojiPicker);
+            setTimeout(() => {
+                emojiPicker.classList.add('visible');
+            }, 10);
+            activeEmojiPicker = emojiPicker;
+            activeMessageElement = messageElement;
+
+            emojiPicker.querySelectorAll('.emoji-category').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const category = this.getAttribute('data-category');
+                    emojiPicker.querySelectorAll('.emoji-category').forEach(el => {
+                        el.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    const container = emojiPicker.querySelector('.emoji-container');
+                    container.innerHTML = '';
+                    emojisByCategory[category].forEach(emoji => {
+                        const btn = document.createElement('button');
+                        btn.className = 'emoji-btn';
+                        btn.textContent = emoji;
+                        btn.setAttribute('aria-label', `${emoji} emoji`);
+                        btn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            addReactionToMessage(messageElement, emoji);
+                            hideEmojiPicker();
                         });
-                        this.classList.add('active');
-                        const container = emojiPicker.querySelector('.emoji-container');
-                        container.innerHTML = '';
-                        emojisByCategory[category].forEach(emoji => {
-                            const btn = document.createElement('button');
-                            btn.className = 'emoji-btn';
-                            btn.textContent = emoji;
-                            btn.setAttribute('aria-label', `${emoji} emoji`);
-                            btn.addEventListener('click', function(e) {
-                                e.stopPropagation();
-                                addReactionToMessage(messageElement, emoji);
-                                hideEmojiPicker();
-                            });
-                            container.appendChild(btn);
-                        });
+                        container.appendChild(btn);
                     });
                 });
-                emojiPicker.querySelector('.emoji-category.active').click();
-            }
+            });
+            emojiPicker.querySelector('.emoji-category.active').click();
+        }
 
-            // Hide emoji picker
-            function hideEmojiPicker() {
-                if (activeEmojiPicker) {
-                    activeEmojiPicker.classList.remove('visible');
-                    setTimeout(() => {
-                        if (activeEmojiPicker && activeEmojiPicker.parentNode) {
-                            activeEmojiPicker.parentNode.removeChild(activeEmojiPicker);
-                        }
-                        activeEmojiPicker = null;
-                    }, 300);
-                }
+        // Hide emoji picker
+        function hideEmojiPicker() {
+            if (activeEmojiPicker) {
+                activeEmojiPicker.classList.remove('visible');
+                setTimeout(() => {
+                    if (activeEmojiPicker && activeEmojiPicker.parentNode) {
+                        activeEmojiPicker.parentNode.removeChild(activeEmojiPicker);
+                    }
+                    activeEmojiPicker = null;
+                }, 300);
             }
+        }
 
-            // Add reaction to message
-            function addReactionToMessage(messageElement, emoji) {
-                let existingReaction = messageElement.querySelector(`.message-reaction[data-emoji="${emoji}"]`);
-                if (existingReaction) {
-                    const countElement = existingReaction.querySelector('.reaction-count');
-                    let count = parseInt(countElement.textContent);
-                    countElement.textContent = (count + 1).toString();
-                    existingReaction.classList.remove('animation-reactionAppear');
-                    void existingReaction.offsetWidth;
-                    existingReaction.classList.add('animation-reactionAppear');
-                } else {
-                    const reaction = document.createElement('div');
-                    reaction.className = 'message-reaction';
-                    reaction.setAttribute('data-emoji', emoji);
-                    reaction.innerHTML = `${emoji} <span class="reaction-count">1</span>`;
-                    messageElement.appendChild(reaction);
-                }
+        // Add reaction to message
+        function addReactionToMessage(messageElement, emoji) {
+            let existingReaction = messageElement.querySelector(`.message-reaction[data-emoji="${emoji}"]`);
+            if (existingReaction) {
+                const countElement = existingReaction.querySelector('.reaction-count');
+                let count = parseInt(countElement.textContent);
+                countElement.textContent = (count + 1).toString();
+                existingReaction.classList.remove('animation-reactionAppear');
+                void existingReaction.offsetWidth;
+                existingReaction.classList.add('animation-reactionAppear');
+            } else {
+                const reaction = document.createElement('div');
+                reaction.className = 'message-reaction';
+                reaction.setAttribute('data-emoji', emoji);
+                reaction.innerHTML = `${emoji} <span class="reaction-count">1</span>`;
+                messageElement.appendChild(reaction);
             }
+        }
 
-            // Open image preview
-            function openImagePreview(imageSrc) {
-                imagePreviewImg.src = imageSrc;
-                imagePreviewModal.classList.add('visible');
-            }
+        // Open image preview
+        function openImagePreview(imageSrc) {
+            imagePreviewImg.src = imageSrc;
+            imagePreviewModal.classList.add('visible');
+        }
 
-            // Close image preview
-            function closeImagePreview() {
-                imagePreviewModal.classList.remove('visible');
-            }
+        // Close image preview
+        function closeImagePreview() {
+            imagePreviewModal.classList.remove('visible');
+        }
 
-            // Helper function to get current time
-            function getCurrentTime() {
-                const now = new Date();
-                let hours = now.getHours();
-                const minutes = now.getMinutes().toString().padStart(2, '0');
-                const ampm = hours >= 12 ? 'PM' : 'AM';
-                hours = hours % 12;
-                hours = hours ? hours : 12;
-                return `${hours}:${minutes} ${ampm}`;
-            }
+        // Helper function to get current time
+        function getCurrentTime() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            return `${hours}:${minutes} ${ampm}`;
+        }
 
-            // Initialize the app
-            init();
-        });
+        // Initialize the app
+        init();
     </script>
 </body>
 </html>
