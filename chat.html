@@ -155,6 +155,7 @@
             box-shadow: var(--shadow-sm);
             transition: background-color var(--transition-normal);
             will-change: background-color;
+            backdrop-filter: blur(8px);
         }
 
         @media (min-width: 768px) {
@@ -168,6 +169,7 @@
 
         .chat-messages {
             margin-top: 65px;
+            padding-bottom: 80px;
         }
 
         .back-button {
@@ -197,7 +199,7 @@
             overflow: hidden;
             flex-shrink: 0;
             position: relative;
-            transition: transform 0.3s ease;
+            border: 2px solid var(--accent-color);
         }
 
         .profile-pic img {
@@ -206,14 +208,10 @@
             object-fit: cover;
         }
 
-        .profile-pic.message-received {
-            animation: pulse 0.6s ease-in-out;
-        }
-
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
         }
 
         .header-info {
@@ -294,7 +292,6 @@
             scroll-behavior: smooth;
             position: relative;
             transition: background-color var(--transition-normal);
-            padding-bottom: 80px;
             will-change: background-color;
         }
 
@@ -348,11 +345,6 @@
             word-wrap: break-word;
             position: relative;
             margin-bottom: 2px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .message:hover {
-            transform: translateY(-2px);
             box-shadow: var(--shadow-sm);
         }
 
@@ -425,10 +417,9 @@
             color: var(--text-on-accent);
             margin-left: auto;
             border-radius: var(--radius-md);
-            border-bottom-right-radius: 4px;
             animation: slideInRightBounce 0.3s ease-out;
             position: relative;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 12px 16px;
         }
 
         .sending-message {
@@ -464,7 +455,6 @@
             animation: slideInLeftBounce 0.3s ease-out;
             position: relative;
             max-width: calc(80% - 52px);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
         @keyframes slideInLeftBounce {
@@ -480,11 +470,7 @@
             margin-top: 8px;
             flex-shrink: 0;
             overflow: hidden;
-            transition: transform 0.3s ease;
-        }
-
-        .message-avatar:hover {
-            transform: scale(1.1);
+            border: 1px solid var(--input-border);
         }
 
         .message-avatar img {
@@ -511,13 +497,6 @@
             border-radius: var(--radius-md);
             margin-bottom: 8px;
             animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
-        }
-
-        @keyframes shake {
-            10%, 90% { transform: translate3d(-1px, 0, 0); }
-            20%, 80% { transform: translate3d(2px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-            40%, 60% { transform: translate3d(4px, 0, 0); }
         }
 
         .dark-mode .error-message {
@@ -582,6 +561,43 @@
             30% { transform: translateY(-6px); }
         }
 
+        .typing-text-container {
+            display: inline-block;
+            position: relative;
+        }
+
+        .typing-text {
+            display: inline-block;
+            overflow: hidden;
+            border-right: 2px solid var(--text-secondary);
+            white-space: nowrap;
+            animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+
+        .typing-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 16px;
+            background-color: var(--text-secondary);
+            margin-left: 2px;
+            animation: blink-cursor 0.7s infinite;
+        }
+
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: var(--text-secondary); }
+        }
+
+        @keyframes blink-cursor {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
         .seen-indicator {
             display: flex;
             align-items: center;
@@ -614,6 +630,7 @@
             z-index: 100;
             transition: background-color var(--transition-normal);
             will-change: background-color;
+            backdrop-filter: blur(8px);
         }
 
         @media (min-width: 768px) {
@@ -694,8 +711,7 @@
         }
 
         .photo-button:hover {
-            transform: scale(1.1) rotate(10deg);
-            color: var(--accent-hover);
+            transform: scale(1.1) rotate(15deg);
         }
 
         .photo-button:active {
@@ -723,8 +739,7 @@
         }
 
         .send-button:not(:disabled):hover {
-            transform: scale(1.1) rotate(10deg);
-            color: var(--accent-hover);
+            transform: scale(1.2) rotate(-15deg);
         }
 
         .send-button:not(:disabled):active {
@@ -764,8 +779,8 @@
         }
 
         .scroll-to-bottom:hover {
+            transform: translateY(-2px) scale(1.1);
             background-color: var(--input-bg);
-            transform: translateY(-2px);
         }
 
         .reaction-panel {
@@ -781,7 +796,7 @@
             z-index: 10;
             opacity: 0;
             pointer-events: none;
-            transition: all 0.2s ease;
+            transition: opacity 0.2s ease, transform 0.2s ease;
             box-shadow: var(--shadow-md);
         }
 
@@ -800,7 +815,7 @@
             color: white;
             font-size: 18px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: transform 0.2s ease, background-color 0.2s ease;
         }
 
         .reaction-btn:hover {
@@ -863,7 +878,7 @@
             box-shadow: var(--shadow-lg);
             opacity: 0;
             pointer-events: none;
-            transition: all 0.2s ease;
+            transition: opacity 0.2s ease, transform 0.2s ease;
             max-width: 320px;
             max-height: 200px;
             overflow-y: auto;
@@ -886,7 +901,7 @@
             font-size: 18px;
             background: none;
             border: none;
-            transition: all 0.2s ease;
+            transition: transform 0.2s ease, background-color 0.2s ease;
         }
 
         .emoji-btn:hover {
@@ -923,8 +938,9 @@
             border-radius: 12px;
             margin-top: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: transform 0.2s ease;
             border: 2px solid rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow-md);
         }
 
         .dark-mode .message-image {
@@ -933,7 +949,6 @@
 
         .message-image:hover {
             transform: scale(1.02);
-            box-shadow: var(--shadow-md);
         }
 
         .image-preview-modal {
@@ -1008,6 +1023,7 @@
             transition: transform 0.3s ease;
             max-width: 100%;
             margin: 0 auto;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
             box-shadow: var(--shadow-lg);
         }
 
@@ -1068,12 +1084,6 @@
             border-radius: var(--radius-md);
             margin-bottom: 16px;
             object-fit: contain;
-            box-shadow: var(--shadow-sm);
-            transition: transform 0.3s ease;
-        }
-
-        .photo-preview-image:hover {
-            transform: scale(1.02);
         }
 
         .photo-preview-actions {
@@ -1089,7 +1099,7 @@
             font-weight: 500;
             font-size: 15px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: background-color 0.2s ease;
             border: none;
         }
 
@@ -1100,7 +1110,6 @@
 
         .photo-preview-cancel:hover {
             background-color: rgba(0, 0, 0, 0.1);
-            transform: translateY(-1px);
         }
 
         .photo-preview-send {
@@ -1110,7 +1119,6 @@
 
         .photo-preview-send:hover {
             background-color: var(--accent-hover);
-            transform: translateY(-1px);
         }
 
         .loading-overlay {
@@ -1293,7 +1301,7 @@
             document.title = `${gfName} Chatbot: Your AI Girlfriend`;
 
             // Google Gemini API Key
-            const GEMINI_API_KEY = 'AIzaSyA4noABIgUKn19XEQqP8aVRkmc7VfvF5Cs';
+            const GEMINI_API_KEY = 'AIzaSyA4noABIgUKn19XEQqP8aVRkmc7VfvF5Cs'; // Use your actual key
 
             // Gemini API Endpoint
             const GEMINI_API_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
@@ -1301,7 +1309,7 @@
             // Get the updated prompt from localStorage
             const basePrompt = localStorage.getItem('samia_updated_prompt') || '';
 
-            // Conversation history array to maintain state
+            // Conversation history array to maintain state (not stored in localStorage)
             let conversationHistory = [];
 
             // Track the last seen indicator
