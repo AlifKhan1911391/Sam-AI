@@ -170,6 +170,8 @@
         .chat-messages {
             margin-top: 65px;
             padding-bottom: 80px;
+            overscroll-behavior: contain;
+            scroll-behavior: smooth;
         }
 
         .back-button {
@@ -785,7 +787,7 @@
 
         .reaction-panel {
             position: absolute;
-            top: -40px;
+            bottom: -40px;
             left: 50%;
             transform: translateX(-50%);
             background-color: var(--reaction-bg);
@@ -827,13 +829,9 @@
             transform: scale(0.95);
         }
 
-        .reaction-add {
-            font-size: 16px;
-        }
-
         .message-reaction {
             position: absolute;
-            top: -20px;
+            bottom: -20px;
             right: 10px;
             background-color: var(--background);
             border-radius: 12px;
@@ -846,91 +844,15 @@
             animation: reactionAppear 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        @keyframes reactionAppear {
-            0% { transform: scale(0); opacity: 0; }
-            70% { transform: scale(1.2); opacity: 1; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
         .bot-message .message-reaction {
             right: auto;
             left: 10px;
         }
 
-        .reaction-count {
-            margin-left: 2px;
-            font-size: 11px;
-            color: var(--text-secondary);
-        }
-
-        .emoji-picker {
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%) translateY(10px);
-            background-color: var(--background);
-            border-radius: 12px;
-            padding: 12px;
-            display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            gap: 8px;
-            z-index: 101;
-            box-shadow: var(--shadow-lg);
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s ease, transform 0.2s ease;
-            max-width: 320px;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .emoji-picker.visible {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-            pointer-events: auto;
-        }
-
-        .emoji-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            font-size: 18px;
-            background: none;
-            border: none;
-            transition: transform 0.2s ease, background-color 0.2s ease;
-        }
-
-        .emoji-btn:hover {
-            transform: scale(1.1);
-            background-color: var(--input-bg);
-        }
-
-        .emoji-btn:active {
-            transform: scale(0.95);
-        }
-
-        .emoji-categories {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            border-bottom: 1px solid var(--input-border);
-            padding-bottom: 8px;
-        }
-
-        .emoji-category {
-            padding: 4px 8px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-
-        .emoji-category:hover,
-        .emoji-category.active {
-            background-color: var(--input-bg);
+        @keyframes reactionAppear {
+            0% { transform: scale(0); opacity: 0; }
+            70% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
         .message-image {
@@ -1215,26 +1137,6 @@
             <button class="reaction-btn" data-emoji="😢" aria-label="Sad reaction">😢</button>
             <button class="reaction-btn" data-emoji="😡" aria-label="Angry reaction">😡</button>
             <button class="reaction-btn" data-emoji="👍" aria-label="Thumbs up reaction">👍</button>
-            <button class="reaction-btn reaction-add" data-emoji="+" aria-label="More reactions">+</button>
-        </div>
-
-        <!-- Emoji picker template (will be shown when + is clicked) -->
-        <div class="emoji-picker" id="emoji-picker-template" style="display: none;">
-            <div class="emoji-categories">
-                <div class="emoji-category active" data-category="recent" aria-label="Recent emojis">🕒</div>
-                <div class="emoji-category" data-category="smileys" aria-label="Smiley emojis">😀</div>
-                <div class="emoji-category" data-category="people" aria-label="People emojis">👋</div>
-                <div class="emoji-category" data-category="animals" aria-label="Animal emojis">🐶</div>
-                <div class="emoji-category" data-category="food" aria-label="Food emojis">🍎</div>
-                <div class="emoji-category" data-category="activities" aria-label="Activity emojis">⚽</div>
-                <div class="emoji-category" data-category="travel" aria-label="Travel emojis">🚗</div>
-                <div class="emoji-category" data-category="objects" aria-label="Object emojis">💡</div>
-                <div class="emoji-category" data-category="symbols" aria-label="Symbol emojis">❤️</div>
-                <div class="emoji-category" data-category="flags" aria-label="Flag emojis">🏁</div>
-            </div>
-            <div class="emoji-container" id="emoji-container">
-                <!-- Emojis will be added here dynamically -->
-            </div>
         </div>
 
         <!-- Image preview modal -->
@@ -1276,8 +1178,6 @@
             const profilePic = document.querySelector('.profile-pic');
             const backButton = document.getElementById('back-button');
             const reactionPanelTemplate = document.getElementById('reaction-panel-template');
-            const emojiPickerTemplate = document.getElementById('emoji-picker-template');
-            const emojiContainer = document.getElementById('emoji-container');
             const charCounter = document.getElementById('char-counter');
             const profileName = document.getElementById('profile-name');
             const photoButton = document.getElementById('photo-button');
@@ -1301,7 +1201,7 @@
             document.title = `${gfName} Chatbot: Your AI Girlfriend`;
 
             // Google Gemini API Key
-            const GEMINI_API_KEY = 'AIzaSyA4noABIgUKn19XEQqP8aVRkmc7VfvF5Cs'; // Use your actual key
+            const GEMINI_API_KEY = 'AIzaSyA4noABIgUKn19XEQqP8aVRkmc7VfvF5Cs';
 
             // Gemini API Endpoint
             const GEMINI_API_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
@@ -1309,15 +1209,14 @@
             // Get the updated prompt from localStorage
             const basePrompt = localStorage.getItem('samia_updated_prompt') || '';
 
-            // Conversation history array to maintain state (not stored in localStorage)
+            // Conversation history array to maintain state
             let conversationHistory = [];
 
             // Track the last seen indicator
             let lastSeenIndicator = null;
 
-            // Track active reaction panel and emoji picker
+            // Track active reaction panel
             let activeReactionPanel = null;
-            let activeEmojiPicker = null;
             let activeMessageElement = null;
 
             // Current photo data
@@ -1326,20 +1225,6 @@
             // Track scroll position
             let isScrolledToBottom = true;
             let scrollDebounceTimer;
-
-            // Emoji categories
-            const emojisByCategory = {
-                recent: ['👍', '❤️', '😂', '🔥', '😍', '🎉', '🙏', '👏', '🥰', '😊'],
-                smileys: ['😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗', '☺️', '😚', '😙', '🥲'],
-                people: ['👋', '🤚', '🖐️', '✋', '🖖', '👌', '🤌', '🤏', '✌️', '🤞', '🤟', '🤘', '🤙', '👈', '👉', '👆', '🖕', '👇', '☝️', '👍'],
-                animals: ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐻‍❄️', '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐵', '🙈', '🙉', '🙊', '🐒'],
-                food: ['🍎', '🍐', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🫐', '🍈', '🍒', '🍑', '🥭', '🍍', '🥥', '🥝', '🍅', '🍆', '🥑', '🥦'],
-                activities: ['⚽', '🏀', '🏈', '⚾', '🥎', '🎾', '🏐', '🏉', '🥏', '🎱', '🪀', '🏓', '🏸', '🏒', '🏑', '🥍', '🏏', '🪃', '🥅', '⛳'],
-                travel: ['🚗', '🚕', '🚙', '🚌', '🚎', '🏎️', '🚓', '🚑', '🚒', '🚐', '🛻', '🚚', '🚛', '🚜', '🦯', '🦽', '🦼', '🛴', '🚲', '🛵'],
-                objects: ['💡', '🔦', '🧯', '🛢️', '💸', '💵', '💴', '💶', '💷', '💰', '💳', '💎', '⚖️', '🔧', '🔨', '⚒️', '🛠️', '⛏️', '🪓', '🔩'],
-                symbols: ['❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '💔', '❣️', '💕', '💞', '💓', '💗', '💖', '💘', '💝', '💟', '☮️'],
-                flags: ['🏁', '🚩', '🎌', '🏴', '🏳️', '🏳️‍🌈', '🏳️‍⚧️', '🏴‍☠️', '🇦🇨', '🇦🇩', '🇦🇪', '🇦🇫', '🇦🇬', '🇦🇮', '🇦🇱', '🇦🇲', '🇦🇴', '🇦🇶', '🇦🇷', '🇦🇸']
-            };
 
             // Initialize the app
             function init() {
@@ -1351,48 +1236,11 @@
                     themeIcon.classList.add('fa-sun');
                 }
 
-                // Initialize emoji picker
-                initEmojiPicker();
-
                 // Start the chat
                 initChat();
 
                 // Setup event listeners
                 setupEventListeners();
-            }
-
-            // Initialize emoji picker
-            function initEmojiPicker() {
-                populateEmojiContainer('recent');
-
-                emojiPickerTemplate.querySelectorAll('.emoji-category').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const category = this.getAttribute('data-category');
-                        emojiPickerTemplate.querySelectorAll('.emoji-category').forEach(el => {
-                            el.classList.remove('active');
-                        });
-                        this.classList.add('active');
-                        populateEmojiContainer(category);
-                    });
-                });
-            }
-
-            function populateEmojiContainer(category) {
-                emojiContainer.innerHTML = '';
-                emojisByCategory[category].forEach(emoji => {
-                    const btn = document.createElement('button');
-                    btn.className = 'emoji-btn';
-                    btn.textContent = emoji;
-                    btn.setAttribute('aria-label', `${emoji} emoji`);
-                    btn.addEventListener('click', function() {
-                        if (activeMessageElement) {
-                            addReactionToMessage(activeMessageElement, emoji);
-                            hideEmojiPicker();
-                            hideReactionPanel();
-                        }
-                    });
-                    emojiContainer.appendChild(btn);
-                });
             }
 
             // Initialize the chat
@@ -1532,11 +1380,8 @@
                     }
                 });
 
-                // Close emoji picker and reaction panel when clicking elsewhere
+                // Close reaction panel when clicking elsewhere
                 document.addEventListener('click', function(e) {
-                    if (!e.target.closest('.emoji-picker') && !e.target.closest('.reaction-btn')) {
-                        hideEmojiPicker();
-                    }
                     if (!e.target.closest('.reaction-panel') && !e.target.closest('.message')) {
                         hideReactionPanel();
                     }
@@ -1573,6 +1418,7 @@
 
                 if (withPhoto) {
                     currentPhotoData = null;
+                    photoInput.value = '';
                 }
 
                 setTimeout(() => {
@@ -1611,7 +1457,6 @@
                         if (message.images && message.images.length > 0) {
                             message.images.forEach(imgData => {
                                 botParts.push({ inline_data: { mime_type: "image/jpeg", data: imgData.split(',')[1] } });
-                            });
                         }
                         formattedConversation.push({ role: "model", parts: botParts });
                     }
@@ -1747,9 +1592,7 @@
                 container.appendChild(messageElement);
                 chatMessages.appendChild(container);
 
-                if (isScrolledToBottom) {
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }
+                maintainScrollPosition();
 
                 const segments = text.split(/(?<=[.!?])\s+/);
                 let currentIndex = 0;
@@ -1771,9 +1614,7 @@
                         typingContainer.appendChild(cursor);
                         messageElement.appendChild(typingContainer);
 
-                        if (isScrolledToBottom) {
-                            chatMessages.scrollTop = chatMessages.scrollHeight;
-                        }
+                        maintainScrollPosition();
 
                         const typingDuration = Math.min(Math.max(segment.length * 30, 500), 2000);
 
@@ -1812,10 +1653,8 @@
                                 img.style.marginBottom = '8px';
                                 img.addEventListener('click', () => openImagePreview(img.src));
                                 messageElement.insertBefore(img, timestamp);
-                                console.log('Bot image added to message:', img.src.substring(0, 30) + '...');
                             });
                         }
-                        setupMessageDetailsPanel(container, false);
                         setupMessageReactions(messageElement);
                     }
                 }
@@ -1844,11 +1683,7 @@
                 `;
 
                 chatMessages.appendChild(container);
-
-                if (isScrolledToBottom) {
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }
-
+                maintainScrollPosition();
                 return container;
             }
 
@@ -1929,16 +1764,12 @@
                         } else {
                             messageElement.appendChild(img);
                         }
-                        console.log('Image added to message:', img.src.substring(0, 30) + '...');
                     });
                 }
 
-                if (isScrolledToBottom) {
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }
+                maintainScrollPosition();
 
                 if (!isError && !isSending) {
-                    setupMessageDetailsPanel(container, isUser);
                     setupMessageReactions(messageElement);
                 }
 
@@ -1960,33 +1791,8 @@
                     `;
                     chatMessages.appendChild(lastSeenIndicator);
 
-                    if (isScrolledToBottom) {
-                        chatMessages.scrollTop = chatMessages.scrollHeight;
-                    }
+                    maintainScrollPosition();
                 }
-            }
-
-            // Handle message details panel
-            function setupMessageDetailsPanel(container, isUser) {
-                const message = container.querySelector('.message');
-                const detailsPanel = document.createElement('div');
-                detailsPanel.className = 'message-details';
-                detailsPanel.innerHTML = `Sent at ${getCurrentTime()} • Seen`;
-                container.appendChild(detailsPanel);
-
-                message.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    document.querySelectorAll('.message-container.show-details').forEach(el => {
-                        if (el !== container) {
-                            el.classList.remove('show-details');
-                        }
-                    });
-                    container.classList.toggle('show-details');
-                });
-
-                document.addEventListener('click', function() {
-                    container.classList.remove('show-details');
-                });
             }
 
             // Setup message reactions
@@ -2039,12 +1845,8 @@
                     btn.addEventListener('click', function(e) {
                         e.stopPropagation();
                         const emoji = this.getAttribute('data-emoji');
-                        if (emoji === '+') {
-                            showEmojiPicker(messageElement);
-                        } else {
-                            addReactionToMessage(messageElement, emoji);
-                            hideReactionPanel();
-                        }
+                        addReactionToMessage(messageElement, emoji);
+                        hideReactionPanel();
                     });
                 });
             }
@@ -2052,7 +1854,6 @@
             // Show reaction panel
             function showReactionPanel(messageElement) {
                 hideReactionPanel();
-                hideEmojiPicker();
                 const reactionPanel = messageElement.querySelector('.reaction-panel');
                 if (reactionPanel) {
                     reactionPanel.classList.add('visible');
@@ -2069,73 +1870,16 @@
                 }
             }
 
-            // Show emoji picker
-            function showEmojiPicker(messageElement) {
-                hideReactionPanel();
-                const emojiPicker = emojiPickerTemplate.cloneNode(true);
-                emojiPicker.id = '';
-                emojiPicker.style.display = 'block';
-                messageElement.appendChild(emojiPicker);
-                setTimeout(() => {
-                    emojiPicker.classList.add('visible');
-                }, 10);
-                activeEmojiPicker = emojiPicker;
-                activeMessageElement = messageElement;
-
-                emojiPicker.querySelectorAll('.emoji-category').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const category = this.getAttribute('data-category');
-                        emojiPicker.querySelectorAll('.emoji-category').forEach(el => {
-                            el.classList.remove('active');
-                        });
-                        this.classList.add('active');
-                        const container = emojiPicker.querySelector('.emoji-container');
-                        container.innerHTML = '';
-                        emojisByCategory[category].forEach(emoji => {
-                            const btn = document.createElement('button');
-                            btn.className = 'emoji-btn';
-                            btn.textContent = emoji;
-                            btn.setAttribute('aria-label', `${emoji} emoji`);
-                            btn.addEventListener('click', function(e) {
-                                e.stopPropagation();
-                                addReactionToMessage(messageElement, emoji);
-                                hideEmojiPicker();
-                            });
-                            container.appendChild(btn);
-                        });
-                    });
-                });
-                emojiPicker.querySelector('.emoji-category.active').click();
-            }
-
-            // Hide emoji picker
-            function hideEmojiPicker() {
-                if (activeEmojiPicker) {
-                    activeEmojiPicker.classList.remove('visible');
-                    setTimeout(() => {
-                        if (activeEmojiPicker && activeEmojiPicker.parentNode) {
-                            activeEmojiPicker.parentNode.removeChild(activeEmojiPicker);
-                        }
-                        activeEmojiPicker = null;
-                    }, 300);
-                }
-            }
-
             // Add reaction to message
             function addReactionToMessage(messageElement, emoji) {
-                let existingReaction = messageElement.querySelector(`.message-reaction[data-emoji="${emoji}"]`);
+                const existingReaction = messageElement.querySelector(`.message-reaction[data-emoji="${emoji}"]`);
                 if (existingReaction) {
-                    const countElement = existingReaction.querySelector('.reaction-count');
-                    let count = parseInt(countElement.textContent);
-                    countElement.textContent = (count + 1).toString();
-                    existingReaction.classList.remove('animation-reactionAppear');
-                    void existingReaction.offsetWidth;
-                    existingReaction.classList.add('animation-reactionAppear');
+                    existingReaction.remove();
                 } else {
                     const reaction = document.createElement('div');
                     reaction.className = 'message-reaction';
                     reaction.setAttribute('data-emoji', emoji);
-                    reaction.innerHTML = `${emoji} <span class="reaction-count">1</span>`;
+                    reaction.textContent = emoji;
                     messageElement.appendChild(reaction);
                 }
             }
@@ -2160,6 +1904,13 @@
                 hours = hours % 12;
                 hours = hours ? hours : 12;
                 return `${hours}:${minutes} ${ampm}`;
+            }
+
+            // Maintain scroll position
+            function maintainScrollPosition() {
+                if (isScrolledToBottom) {
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
             }
 
             // Initialize the app
