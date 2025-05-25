@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-                :root {
+        :root {
             /* Light mode variables */
             --background-light: #FFFFFF;
             --background-secondary-light: #F0F2F5;
@@ -100,7 +100,7 @@
         }
 
         html, body {
-            overflow-x: hidden; /* Prevent horizontal scrolling */
+            overflow-x: hidden;
             width: 100%;
             position: relative;
         }
@@ -126,7 +126,7 @@
             background-color: var(--background);
             transition: background-color var(--transition-normal);
             will-change: background-color;
-            overflow-x: hidden; /* Prevent horizontal scrolling */
+            overflow-x: hidden;
         }
 
         @media (min-width: 768px) {
@@ -167,7 +167,7 @@
         }
 
         .chat-messages {
-            margin-top: 65px; /* Add space for fixed header */
+            margin-top: 65px;
         }
 
         .back-button {
@@ -242,7 +242,7 @@
             margin-right: 6px;
             flex-shrink: 0;
             animation: pulse 2s infinite;
-            display: block; /* Always visible */
+            display: block;
         }
 
         .status-dot.typing-dot {
@@ -281,18 +281,17 @@
         .chat-messages {
             flex: 1;
             padding: 16px;
-            padding-top: 20px; /* Added more padding at the top */
+            padding-top: 20px;
             overflow-y: auto;
-            overflow-x: hidden; /* Prevent horizontal scrolling */
+            overflow-x: hidden;
             background-color: var(--background);
             scroll-behavior: smooth;
             position: relative;
             transition: background-color var(--transition-normal);
-            padding-bottom: 80px; /* Add padding to prevent messages from being hidden behind input */
+            padding-bottom: 80px;
             will-change: background-color;
         }
 
-        /* Custom scrollbar styling */
         .chat-messages::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -327,12 +326,11 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Update the bot message container */
         .bot-message-container {
             display: flex;
             align-items: flex-start;
             margin-bottom: 8px;
-            padding-left: 8px; /* Reduced from 48px */
+            padding-left: 8px;
         }
 
         .message {
@@ -410,7 +408,6 @@
             padding: 0;
         }
 
-        /* Enhanced: Improved user message animation */
         .user-message {
             background: var(--user-bubble-gradient);
             color: var(--text-on-accent);
@@ -419,10 +416,9 @@
             border-bottom-right-radius: 4px;
             animation: slideInRightBounce 0.3s ease-out;
             position: relative;
-            padding: 12px 16px; /* Added padding */
+            padding: 12px 16px;
         }
 
-        /* Visual feedback for sending message */
         .sending-message {
             opacity: 0.8;
             transform: scale(0.98);
@@ -448,15 +444,14 @@
             align-items: flex-end;
         }
 
-        /* Enhanced: Improved bot message animation */
         .bot-message {
             background-color: var(--bot-bubble);
             color: var(--text-primary);
-            margin-left: 12px; /* Space between avatar and message */
+            margin-left: 12px;
             border-radius: 0 var(--radius-md) var(--radius-md) var(--radius-md);
             animation: slideInLeftBounce 0.3s ease-out;
             position: relative;
-            max-width: calc(80% - 52px); /* Account for avatar space */
+            max-width: calc(80% - 52px);
         }
 
         @keyframes slideInLeftBounce {
@@ -465,14 +460,13 @@
             100% { transform: translateX(0); opacity: 1; }
         }
 
-        /* Profile picture for messages - fixed to be perfect circle */
         .message-avatar {
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            margin-top: 8px; /* Align with first line of text */
+            margin-top: 8px;
             flex-shrink: 0;
-            overflow: hidden; /* Ensure image stays within circle */
+            overflow: hidden;
         }
 
         .message-avatar img {
@@ -481,7 +475,6 @@
             object-fit: cover;
         }
 
-        /* Improved: Connect consecutive messages from the same sender with consistent spacing */
         .bot-message-container + .bot-message-container .message {
             border-top-left-radius: 4px;
             margin-top: -4px;
@@ -528,7 +521,6 @@
             color: rgba(255, 255, 255, 0.8);
         }
 
-        /* Typing indicator */
         .typing-container {
             display: flex;
             align-items: flex-start;
@@ -572,7 +564,6 @@
             30% { transform: translateY(-6px); }
         }
 
-        /* Typing text animation */
         .typing-text-container {
             display: inline-block;
             position: relative;
@@ -592,7 +583,7 @@
             height: 16px;
             background-color: var(--text-secondary);
             margin-left: 2px;
-            animation: blink-cursor 0.7s infinite;
+            animation: blink-cursor 0.8s ease-in-out infinite;
         }
 
         @keyframes typing {
@@ -606,11 +597,10 @@
         }
 
         @keyframes blink-cursor {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
         }
 
-        /* Seen indicator */
         .seen-indicator {
             display: flex;
             align-items: center;
@@ -630,7 +620,6 @@
             margin-left: 4px;
         }
 
-        /* Chat input container */
         .chat-input-container {
             padding: 12px 16px;
             background-color: var(--background);
@@ -754,7 +743,6 @@
             transform: scale(0.95);
         }
 
-        /* Scroll to bottom button */
         .scroll-to-bottom {
             position: fixed;
             bottom: 80px;
@@ -778,7 +766,7 @@
 
         @media (min-width: 768px) {
             .scroll-to-bottom {
-                right: calc(50% - 384px + 16px); /* Centered with the chat container */
+                right: calc(50% - 384px + 16px);
             }
         }
 
@@ -791,7 +779,6 @@
             background-color: var(--input-bg);
         }
 
-        /* Message reactions */
         .reaction-panel {
             position: absolute;
             top: -40px;
@@ -872,7 +859,6 @@
             color: var(--text-secondary);
         }
 
-        /* Emoji picker */
         .emoji-picker {
             position: absolute;
             bottom: 100%;
@@ -943,7 +929,6 @@
             background-color: var(--input-bg);
         }
 
-        /* Message image styling */
         .message-image {
             max-width: 300px;
             border-radius: 12px;
@@ -961,7 +946,6 @@
             transform: scale(1.02);
         }
 
-        /* Image preview modal */
         .image-preview-modal {
             position: fixed;
             top: 0;
@@ -1018,7 +1002,6 @@
             background-color: rgba(255, 255, 255, 0.3);
         }
 
-        /* Photo upload preview */
         .photo-preview-container {
             position: fixed;
             bottom: 80px;
@@ -1044,7 +1027,7 @@
                 transform: translateX(-50%) translateY(100%);
                 border-left: 1px solid rgba(0, 0, 0, 0.1);
                 border-right: 1px solid rgba(0, 0, 0, 0.1);
-                width: 100%; /* Ensure full width up to max-width */
+                width: 100%;
             }
 
             .photo-preview-container.visible {
@@ -1131,7 +1114,6 @@
             background-color: var(--accent-hover);
         }
 
-        /* Loading indicator for image processing */
         .loading-overlay {
             position: absolute;
             top: 0;
@@ -1150,8 +1132,8 @@
             width: 40px;
             height: 40px;
             border: 4px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
             border-top-color: white;
+            border-radius: 50%;
             animation: spin 1s linear infinite;
         }
 
@@ -1159,7 +1141,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Add avatar loading improvement */
         .avatar-loading {
             background: linear-gradient(90deg, #f0f0f0, #e0e0e0, #f0f0f0);
             background-size: 200% 100%;
@@ -1292,6 +1273,16 @@
             const emojiContainer = document.getElementById('emoji-container');
             const charCounter = document.getElementById('char-counter');
             const profileName = document.getElementById('profile-name');
+            const photoInput = document.getElementById('photo-input');
+            const photoButton = document.getElementById('photo-button');
+            const photoPreviewImage = document.getElementById('photo-preview-image');
+            const photoPreviewContainer = document.getElementById('photo-preview-container');
+            const photoPreviewClose = document.getElementById('photo-preview-close');
+            const photoPreviewCancel = document.getElementById('photo-preview-cancel');
+            const photoPreviewSend = document.getElementById('photo-preview-send');
+            const imagePreviewModal = document.getElementById('image-preview-modal');
+            const imagePreviewImg = document.getElementById('image-preview-img');
+            const imagePreviewClose = document.getElementById('image-preview-close');
 
             // Get dynamic names from localStorage
             const userName = localStorage.getItem('samia_user_name') || 'friend';
@@ -1303,7 +1294,7 @@
             document.title = `${gfName} Chatbot: Your AI Girlfriend`;
 
             // Google Gemini API Key
-            const GEMINI_API_KEY = 'AIzaSyA4noABIgUKn19XEQqP8aVRkmc7VfvF5Cs'; // Use your actual key
+            const GEMINI_API_KEY = 'AIzaSyA4noABIgUKn19XEQqP8aVRkmc7VfvF5Cs';
 
             // Gemini API Endpoint
             const GEMINI_API_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
@@ -1311,7 +1302,7 @@
             // Get the updated prompt from localStorage
             const basePrompt = localStorage.getItem('samia_updated_prompt') || '';
 
-            // Conversation history array to maintain state (not stored in localStorage)
+            // Conversation history array to maintain state
             let conversationHistory = [];
 
             // Track the last seen indicator
@@ -1469,7 +1460,7 @@
                     photoInput.click();
                 });
 
-                // Photo input change
+                // Photo input change - Fixed version
                 photoInput.addEventListener('change', function(e) {
                     if (e.target.files && e.target.files[0]) {
                         const file = e.target.files[0];
@@ -1488,6 +1479,7 @@
                             photoPreviewContainer.classList.add('visible');
                             currentPhotoData = e.target.result;
                             sendButton.disabled = false;
+                            messageInput.disabled = false;
                         };
                         reader.onerror = function() {
                             addMessage({error: true, message: "Error reading the image file. Please try again."}, false, true);
@@ -1516,7 +1508,7 @@
                     }, 300);
                 });
 
-                // Photo preview send
+                // Photo preview send - Fixed version
                 photoPreviewSend.addEventListener('click', function() {
                     photoPreviewContainer.classList.remove('visible');
                     if (currentPhotoData) {
@@ -1545,7 +1537,7 @@
                 });
             }
 
-            // Send message function
+            // Send message function - Fixed version
             function sendMessage(withPhoto = false) {
                 const messageText = messageInput.value.trim();
                 if (!messageText && !withPhoto) return;
@@ -1570,11 +1562,14 @@
                 messageInput.style.height = 'auto';
                 sendButton.disabled = true;
                 charCounter.classList.remove('visible');
+                messageInput.disabled = false;
 
                 sendToGemini(messageText, withPhoto ? currentPhotoData : null);
 
                 if (withPhoto) {
                     currentPhotoData = null;
+                    photoPreviewImage.src = '';
+                    photoPreviewContainer.classList.remove('visible');
                 }
 
                 setTimeout(() => {
@@ -1588,7 +1583,7 @@
                 }, 300);
             }
 
-            // Format messages for API
+            // Format messages for API - Fixed version
             function formatMessagesForAPI(messageText, photoData) {
                 const formattedConversation = [];
                 formattedConversation.push({
@@ -1620,8 +1615,13 @@
                 }
 
                 if (photoData) {
-                    const userParts = [{ text: messageText || "" }];
-                    userParts.push({ inline_data: { mime_type: "image/jpeg", data: photoData.split(',')[1] } });
+                    const userParts = [{ text: messageText || "Sent a photo" }];
+                    userParts.push({ 
+                        inline_data: { 
+                            mime_type: "image/jpeg", 
+                            data: photoData.split(',')[1] 
+                        }
+                    });
                     formattedConversation.push({ role: "user", parts: userParts });
                 } else if (messageText) {
                     formattedConversation.push({ role: "user", parts: [{ text: messageText }] });
