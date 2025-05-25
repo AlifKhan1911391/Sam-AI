@@ -829,8 +829,8 @@
 
         .message-reaction {
             position: absolute;
-            top: -20px;
-            right: 10px;
+            bottom: -15px; /* Adjust as needed for desired position */
+            right: 10px; /* Adjust as needed for desired position */
             background-color: var(--background);
             border-radius: 12px;
             padding: 2px 6px;
@@ -850,7 +850,7 @@
 
         .bot-message .message-reaction {
             right: auto;
-            left: 10px;
+            left: 10px; /* For bot messages, position on the left */
         }
 
         .reaction-count {
@@ -1179,8 +1179,7 @@
         </div>
 
         <div class="chat-messages" id="chat-messages">
-            <!-- Messages will appear here -->
-        </div>
+            </div>
 
         <button class="scroll-to-bottom" id="scroll-to-bottom" aria-label="Scroll to bottom">
             <i class="fas fa-chevron-down"></i>
@@ -1200,7 +1199,6 @@
             </div>
         </div>
 
-        <!-- Reaction panel template (will be cloned and used dynamically) -->
         <div class="reaction-panel" id="reaction-panel-template" style="display: none;">
             <button class="reaction-btn" data-emoji="❤️" aria-label="Heart reaction">❤️</button>
             <button class="reaction-btn" data-emoji="😂" aria-label="Laugh reaction">😂</button>
@@ -1208,10 +1206,8 @@
             <button class="reaction-btn" data-emoji="😢" aria-label="Sad reaction">😢</button>
             <button class="reaction-btn" data-emoji="😡" aria-label="Angry reaction">😡</button>
             <button class="reaction-btn" data-emoji="👍" aria-label="Thumbs up reaction">👍</button>
-            <button class="reaction-btn reaction-add" data-emoji="+" aria-label="More reactions">+</button>
         </div>
 
-        <!-- Emoji picker template (will be shown when + is clicked) -->
         <div class="emoji-picker" id="emoji-picker-template" style="display: none;">
             <div class="emoji-categories">
                 <div class="emoji-category active" data-category="recent" aria-label="Recent emojis">🕒</div>
@@ -1226,11 +1222,9 @@
                 <div class="emoji-category" data-category="flags" aria-label="Flag emojis">🏁</div>
             </div>
             <div class="emoji-container" id="emoji-container">
-                <!-- Emojis will be added here dynamically -->
-            </div>
+                </div>
         </div>
 
-        <!-- Image preview modal -->
         <div class="image-preview-modal" id="image-preview-modal" aria-label="Image preview">
             <div class="image-preview-content">
                 <button class="image-preview-close" id="image-preview-close" aria-label="Close preview">
@@ -1240,7 +1234,6 @@
             </div>
         </div>
 
-        <!-- Photo upload preview -->
         <div class="photo-preview-container" id="photo-preview-container">
             <div class="photo-preview-header">
                 <div class="photo-preview-title">Send photo</div>
@@ -1269,8 +1262,8 @@
             const profilePic = document.querySelector('.profile-pic');
             const backButton = document.getElementById('back-button');
             const reactionPanelTemplate = document.getElementById('reaction-panel-template');
-            const emojiPickerTemplate = document.getElementById('emoji-picker-template');
-            const emojiContainer = document.getElementById('emoji-container');
+            // const emojiPickerTemplate = document.getElementById('emoji-picker-template'); // No longer needed for full emoji picker
+            // const emojiContainer = document.getElementById('emoji-container'); // No longer needed for full emoji picker
             const charCounter = document.getElementById('char-counter');
             const profileName = document.getElementById('profile-name');
             const photoInput = document.getElementById('photo-input');
@@ -1285,16 +1278,16 @@
             const imagePreviewClose = document.getElementById('image-preview-close');
 
             // Get dynamic names from localStorage
-            const userName = localStorage.getItem('aigf_user_name') || 'friend';
-            const gfName = localStorage.getItem('aigf_gf_name') || 'aigf';
-            const gfNameFull = localStorage.getItem('aigf_gf_name_full') || 'aigf Afroz';
+            const userName = localStorage.getItem('aigf_user_name') || 'jaaaaaan';
+            const gfName = localStorage.getItem('aigf_gf_name') || 'Samia';
+            const gfNameFull = localStorage.getItem('aigf_gf_name_full') || 'Samia Afroz';
 
             // Update profile name and title
             profileName.textContent = `${gfNameFull} 💖`;
             document.title = `${gfName} Chatbot: Your AI Girlfriend`;
 
             // Google Gemini API Key
-            const GEMINI_API_KEY = 'AIzaSyA4noABIgUKn19XEQqP8aVRkmc7VfvF5Cs';
+            const GEMINI_API_KEY = 'AIzaSyA4noABIgUKn19XEQqP8aVRkmc7VfvF5Cs'; // Replace with your actual Gemini API key
 
             // Gemini API Endpoint
             const GEMINI_API_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
@@ -1310,7 +1303,7 @@
 
             // Track active reaction panel and emoji picker
             let activeReactionPanel = null;
-            let activeEmojiPicker = null;
+            // let activeEmojiPicker = null; // No longer needed
             let activeMessageElement = null;
 
             // Current photo data
@@ -1320,19 +1313,8 @@
             let isScrolledToBottom = true;
             let scrollDebounceTimer;
 
-            // Emoji categories
-            const emojisByCategory = {
-                recent: ['👍', '❤️', '😂', '🔥', '😍', '🎉', '🙏', '👏', '🥰', '😊'],
-                smileys: ['😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗', '☺️', '😚', '😙', '🥲'],
-                people: ['👋', '🤚', '🖐️', '✋', '🖖', '👌', '🤌', '🤏', '✌️', '🤞', '🤟', '🤘', '🤙', '👈', '👉', '👆', '🖕', '👇', '☝️', '👍'],
-                animals: ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐻‍❄️', '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐵', '🙈', '🙉', '🙊', '🐒'],
-                food: ['🍎', '🍐', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🫐', '🍈', '🍒', '🍑', '🥭', '🍍', '🥥', '🥝', '🍅', '🍆', '🥑', '🥦'],
-                activities: ['⚽', '🏀', '🏈', '⚾', '🥎', '🎾', '🏐', '🏉', '🥏', '🎱', '🪀', '🏓', '🏸', '🏒', '🏑', '🥍', '🏏', '🪃', '🥅', '⛳'],
-                travel: ['🚗', '🚕', '🚙', '🚌', '🚎', '🏎️', '🚓', '🚑', '🚒', '🚐', '🛻', '🚚', '🚛', '🚜', '🦯', '🦽', '🦼', '🛴', '🚲', '🛵'],
-                objects: ['💡', '🔦', '🧯', '🛢️', '💸', '💵', '💴', '💶', '💷', '💰', '💳', '💎', '⚖️', '🔧', '🔨', '⚒️', '🛠️', '⛏️', '🪓', '🔩'],
-                symbols: ['❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '💔', '❣️', '💕', '💞', '💓', '💗', '💖', '💘', '💝', '💟', '☮️'],
-                flags: ['🏁', '🚩', '🎌', '🏴', '🏳️', '🏳️‍🌈', '🏳️‍⚧️', '🏴‍☠️', '🇦🇨', '🇦🇩', '🇦🇪', '🇦🇫', '🇦🇬', '🇦🇮', '🇦🇱', '🇦🇲', '🇦🇴', '🇦🇶', '🇦🇷', '🇦🇸']
-            };
+            // Define the 6 allowed emojis for reactions
+            const allowedReactions = ['❤️', '😂', '😮', '😢', '😡', '👍'];
 
             // Initialize the app
             function init() {
@@ -1344,9 +1326,6 @@
                     themeIcon.classList.add('fa-sun');
                 }
 
-                // Initialize emoji picker
-                initEmojiPicker();
-
                 // Start the chat
                 initChat();
 
@@ -1354,43 +1333,13 @@
                 setupEventListeners();
             }
 
-            // Initialize emoji picker
-            function initEmojiPicker() {
-                populateEmojiContainer('recent');
-
-                emojiPickerTemplate.querySelectorAll('.emoji-category').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const category = this.getAttribute('data-category');
-                        emojiPickerTemplate.querySelectorAll('.emoji-category').forEach(el => {
-                            el.classList.remove('active');
-                        });
-                        this.classList.add('active');
-                        populateEmojiContainer(category);
-                    });
-                });
-            }
-
-            function populateEmojiContainer(category) {
-                emojiContainer.innerHTML = '';
-                emojisByCategory[category].forEach(emoji => {
-                    const btn = document.createElement('button');
-                    btn.className = 'emoji-btn';
-                    btn.textContent = emoji;
-                    btn.setAttribute('aria-label', `${emoji} emoji`);
-                    btn.addEventListener('click', function() {
-                        if (activeMessageElement) {
-                            addReactionToMessage(activeMessageElement, emoji);
-                            hideEmojiPicker();
-                            hideReactionPanel();
-                        }
-                    });
-                    emojiContainer.appendChild(btn);
-                });
-            }
-
             // Initialize the chat
             async function initChat() {
-                await sendToGemini(`Start the conversation as my girlfriend ${gfName}. Remember my name is ${userName}.`);
+                // Send an initial message to the Gemini API to set the persona
+                // Only send this if the conversation history is empty (first load)
+                if (conversationHistory.length === 0) {
+                     await sendToGemini(`Start the conversation as my girlfriend ${gfName}. Remember my name is ${userName}.`);
+                }
             }
 
             // Setup event listeners
@@ -1460,7 +1409,7 @@
                     photoInput.click();
                 });
 
-                // Photo input change - Fixed version
+                // Photo input change
                 photoInput.addEventListener('change', function(e) {
                     if (e.target.files && e.target.files[0]) {
                         const file = e.target.files[0];
@@ -1508,7 +1457,7 @@
                     }, 300);
                 });
 
-                // Photo preview send - Fixed version
+                // Photo preview send
                 photoPreviewSend.addEventListener('click', function() {
                     photoPreviewContainer.classList.remove('visible');
                     if (currentPhotoData) {
@@ -1526,18 +1475,15 @@
                     }
                 });
 
-                // Close emoji picker and reaction panel when clicking elsewhere
+                // Close reaction panel when clicking elsewhere
                 document.addEventListener('click', function(e) {
-                    if (!e.target.closest('.emoji-picker') && !e.target.closest('.reaction-btn')) {
-                        hideEmojiPicker();
-                    }
                     if (!e.target.closest('.reaction-panel') && !e.target.closest('.message')) {
                         hideReactionPanel();
                     }
                 });
             }
 
-            // Send message function - Fixed version
+            // Send message function
             function sendMessage(withPhoto = false) {
                 const messageText = messageInput.value.trim();
                 if (!messageText && !withPhoto) return;
@@ -1568,6 +1514,7 @@
 
                 if (withPhoto) {
                     currentPhotoData = null;
+                    photoInput.value = ''; // Clear file input
                     photoPreviewImage.src = '';
                     photoPreviewContainer.classList.remove('visible');
                 }
@@ -1583,9 +1530,15 @@
                 }, 300);
             }
 
-            // Format messages for API - Fixed version
+            // Format messages for API
             function formatMessagesForAPI(messageText, photoData) {
                 const formattedConversation = [];
+                // Only add the base prompt once at the very beginning of the conversation.
+                // For subsequent calls, it's already part of the model's "memory" or the ongoing session.
+                // The Gemini API context is typically handled by passing the full conversation history.
+                // We're passing the base prompt at the start of the `contents` array as a system message.
+                // This means the "basePrompt" should effectively be the first "user" and "model" turn for persona setting.
+                
                 formattedConversation.push({
                     role: "user",
                     parts: [{ text: basePrompt || `You are ${gfNameFull} (nickname: ${gfName}), a 19-year-old Bangladeshi virtual girlfriend. Be sweet, romantic, and sometimes flirty. Mix Romanized Bangla (70%) with English (30%). Keep responses short (3-4 lines).` }]
@@ -1595,7 +1548,8 @@
                     parts: [{ text: `I'll be ${gfName}, your Bangladeshi girlfriend. I'll respond as described.` }]
                 });
 
-                const recentHistory = conversationHistory.slice(-10);
+                // Add recent conversation history (last 10 turns for example)
+                const recentHistory = conversationHistory.slice(-10); // Adjust as needed
                 for (const message of recentHistory) {
                     if (message.isUser) {
                         const userParts = [{ text: message.text || "" }];
@@ -1614,8 +1568,12 @@
                     }
                 }
 
+                // Add the current user message (and photo if any)
                 if (photoData) {
-                    const userParts = [{ text: messageText || "Sent a photo" }];
+                    const userParts = [];
+                    if (messageText) {
+                        userParts.push({ text: messageText });
+                    }
                     userParts.push({ 
                         inline_data: { 
                             mime_type: "image/jpeg", 
@@ -1626,10 +1584,11 @@
                 } else if (messageText) {
                     formattedConversation.push({ role: "user", parts: [{ text: messageText }] });
                 }
+                
                 return formattedConversation;
             }
 
-            // Simplified API call function
+            // API call function
             async function sendToGemini(messageText, photoData = null) {
                 try {
                     showTyping();
@@ -1664,10 +1623,13 @@
                     retryButton.textContent = 'Retry';
                     retryButton.style.marginTop = '8px';
                     retryButton.addEventListener('click', () => {
-                        const lastMessage = conversationHistory[conversationHistory.length - 1];
-                        if (lastMessage && lastMessage.isUser) {
-                            sendToGemini(lastMessage.text, lastMessage.photoData);
+                        // Find the last user message from history to retry
+                        const lastUserMessage = conversationHistory.findLast(msg => msg.isUser);
+                        if (lastUserMessage) {
+                            sendToGemini(lastUserMessage.text, lastUserMessage.photoData);
                             errorContainer.remove();
+                        } else {
+                            addMessage({error: true, message: "No previous message to retry."}, false, true);
                         }
                     });
 
@@ -1701,6 +1663,7 @@
                         }
                     });
 
+                    // Remove leading "Aiyoo!" etc. from the response
                     responseText = responseText.replace(/^(Aiyoo!|Aiyoo|Uff!|Hmph!|Uff|Hmph)(\s+|\s*[!,]\s*)/i, '');
 
                     conversationHistory.push({
@@ -1753,42 +1716,78 @@
                     chatMessages.scrollTop = chatMessages.scrollHeight;
                 }
 
-                const segments = text.split(/(?<=[.!?])\s+/);
-                let currentIndex = 0;
+                // Split text by markdown components or natural pauses for typing effect
+                const segments = text.split(/(\*\*.*?\*\*|__.*?__|\*.*?\*|_.*?_|\n|\s+(?=[.!?]))/g).filter(s => s.trim() !== ''); // Improved splitting for markdown
+                let currentSegmentIndex = 0;
+                let currentTypingElement = null; // To manage the current typing element
 
                 function typeNextSegment() {
-                    if (currentIndex < segments.length) {
-                        const segment = segments[currentIndex];
-                        const typingContainer = document.createElement('div');
-                        typingContainer.className = 'typing-text-container';
+                    if (currentSegmentIndex < segments.length) {
+                        const segment = segments[currentSegmentIndex];
+                        let segmentContent = marked.parse(segment, {breaks: true, gfm: true}); // Parse markdown for the segment
 
-                        const typingText = document.createElement('span');
-                        typingText.className = 'typing-text';
-                        typingText.textContent = segment;
-
-                        const cursor = document.createElement('span');
-                        cursor.className = 'typing-cursor';
-
-                        typingContainer.appendChild(typingText);
-                        typingContainer.appendChild(cursor);
-                        messageElement.appendChild(typingContainer);
-
-                        if (isScrolledToBottom) {
-                            chatMessages.scrollTop = chatMessages.scrollHeight;
+                        // If it's a new line, add a <br>
+                        if (segment === '\n' && messageElement.lastChild && messageElement.lastChild.nodeName !== 'BR') {
+                            messageElement.appendChild(document.createElement('br'));
+                            currentSegmentIndex++;
+                            typeNextSegment();
+                            return;
                         }
 
-                        const typingDuration = Math.min(Math.max(segment.length * 30, 500), 2000);
+                        const tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = segmentContent;
+                        const actualTextContent = tempDiv.textContent || tempDiv.innerText;
 
-                        setTimeout(() => {
-                            cursor.remove();
-                            typingText.classList.remove('typing-text');
-                            if (currentIndex < segments.length - 1) {
-                                messageElement.appendChild(document.createElement('br'));
+                        // Create a span to contain the typing text
+                        const typingTextSpan = document.createElement('span');
+                        typingTextSpan.innerHTML = ''; // Start empty
+                        typingTextSpan.className = 'typing-text-part'; // Add a class for individual parts
+
+                        if (currentTypingElement) {
+                             // If previous segment was also typed, continue in the same element
+                             currentTypingElement.appendChild(typingTextSpan);
+                        } else {
+                            // Otherwise, create a new typing container with cursor
+                            const typingContainer = document.createElement('div');
+                            typingContainer.className = 'typing-text-container';
+                            const cursor = document.createElement('span');
+                            cursor.className = 'typing-cursor';
+                            typingContainer.appendChild(typingTextSpan);
+                            typingContainer.appendChild(cursor);
+                            messageElement.insertBefore(typingContainer, timestamp); // Insert before timestamp
+                            currentTypingElement = typingTextSpan; // Set current typing element
+                        }
+
+                        let charIndex = 0;
+                        const typingInterval = setInterval(() => {
+                            if (charIndex < actualTextContent.length) {
+                                typingTextSpan.innerHTML += actualTextContent.charAt(charIndex);
+                                charIndex++;
+                                if (isScrolledToBottom) {
+                                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                                }
+                            } else {
+                                clearInterval(typingInterval);
+                                // Remove cursor from the finished segment
+                                if (currentTypingElement && currentTypingElement.nextSibling && currentTypingElement.nextSibling.classList && currentTypingElement.nextSibling.classList.contains('typing-cursor')) {
+                                    currentTypingElement.nextSibling.remove();
+                                }
+                                
+                                // Replace the dynamically typed content with the full parsed markdown for correct rendering
+                                const finalContent = document.createElement('div');
+                                finalContent.innerHTML = segmentContent;
+                                typingTextSpan.parentNode.replaceChild(finalContent.firstChild, typingTextSpan);
+
+                                currentSegmentIndex++;
+                                // Reset currentTypingElement if the next segment is not a direct continuation (e.g., after a full stop)
+                                if (segment.match(/[.!?]$/) || currentSegmentIndex === segments.length) {
+                                    currentTypingElement = null;
+                                }
+                                typeNextSegment(); // Move to the next segment
                             }
-                            currentIndex++;
-                            typeNextSegment();
-                        }, typingDuration);
+                        }, 25); // Typing speed
                     } else {
+                        // All text segments are typed, now add images if any
                         if (images && images.length > 0) {
                             images.forEach(imgSrc => {
                                 if (!imgSrc) return;
@@ -1817,13 +1816,13 @@
                                 console.log('Bot image added to message:', img.src.substring(0, 30) + '...');
                             });
                         }
-                        setupMessageDetailsPanel(container, false);
-                        setupMessageReactions(messageElement);
+                        setupMessageReactions(messageElement); // Setup reactions after message is fully rendered
                     }
                 }
                 typeNextSegment();
                 return container;
             }
+
 
             // Show typing indicator with enhanced animation
             function showTyping() {
@@ -1864,7 +1863,7 @@
                 profilePic.classList.remove('typing');
             }
 
-            // Add message to the chat
+            // Add message to the chat (for user messages and errors)
             function addMessage(message, isUser = false, isError = false, withAnimation = true, images = null, isSending = false) {
                 const container = document.createElement('div');
                 container.className = isUser ? 'message-container user-message-container' : 'message-container bot-message-container';
@@ -1886,7 +1885,8 @@
                 if (isError) {
                     messageContent = message.message || 'An error occurred';
                 } else if (typeof message === 'string') {
-                    messageContent = isUser ? message : marked.parse(message);
+                    // Use marked.parse for markdown rendering for both user and bot messages
+                    messageContent = marked.parse(message, {breaks: true, gfm: true});
                 } else {
                     messageContent = message;
                 }
@@ -1939,8 +1939,8 @@
                     chatMessages.scrollTop = chatMessages.scrollHeight;
                 }
 
+                // Reactions are only for sent messages, not errors or temporary sending states
                 if (!isError && !isSending) {
-                    setupMessageDetailsPanel(container, isUser);
                     setupMessageReactions(messageElement);
                 }
 
@@ -1968,39 +1968,22 @@
                 }
             }
 
-            // Handle message details panel
-            function setupMessageDetailsPanel(container, isUser) {
-                const message = container.querySelector('.message');
-                const detailsPanel = document.createElement('div');
-                detailsPanel.className = 'message-details';
-                detailsPanel.innerHTML = `Sent at ${getCurrentTime()} • Seen`;
-                container.appendChild(detailsPanel);
-
-                message.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    document.querySelectorAll('.message-container.show-details').forEach(el => {
-                        if (el !== container) {
-                            el.classList.remove('show-details');
-                        }
-                    });
-                    container.classList.toggle('show-details');
-                });
-
-                document.addEventListener('click', function() {
-                    container.classList.remove('show-details');
-                });
-            }
-
             // Setup message reactions
             function setupMessageReactions(messageElement) {
                 const reactionPanel = reactionPanelTemplate.cloneNode(true);
                 reactionPanel.id = '';
-                reactionPanel.style.display = 'flex';
+                // Remove the "+" button if it exists
+                const addButton = reactionPanel.querySelector('.reaction-add');
+                if (addButton) {
+                    addButton.remove();
+                }
+                reactionPanel.style.display = 'flex'; // Ensure it's displayed as flex
                 messageElement.appendChild(reactionPanel);
 
                 let longPressTimer;
                 let longPressStarted = false;
 
+                // For touch devices (long press or double tap)
                 messageElement.addEventListener('touchstart', function(e) {
                     longPressStarted = true;
                     longPressTimer = setTimeout(() => {
@@ -2008,7 +1991,7 @@
                             e.preventDefault();
                             showReactionPanel(messageElement);
                         }
-                    }, 500);
+                    }, 500); // 500ms for long press
                 });
 
                 messageElement.addEventListener('touchmove', function() {
@@ -2016,22 +1999,21 @@
                     clearTimeout(longPressTimer);
                 });
 
-                messageElement.addEventListener('touchend', function() {
+                messageElement.addEventListener('touchend', function(e) {
                     longPressStarted = false;
                     clearTimeout(longPressTimer);
-                });
 
-                let lastTap = 0;
-                messageElement.addEventListener('touchend', function(e) {
+                    // Double tap logic
                     const currentTime = new Date().getTime();
-                    const tapLength = currentTime - lastTap;
-                    if (tapLength < 300 && tapLength > 0) {
+                    const tapLength = currentTime - (messageElement.lastTap || 0);
+                    if (tapLength < 300 && tapLength > 0) { // If second tap within 300ms
                         e.preventDefault();
                         showReactionPanel(messageElement);
                     }
-                    lastTap = currentTime;
+                    messageElement.lastTap = currentTime;
                 });
 
+                // For desktop (double click)
                 messageElement.addEventListener('dblclick', function(e) {
                     e.preventDefault();
                     showReactionPanel(messageElement);
@@ -2041,10 +2023,9 @@
                     btn.addEventListener('click', function(e) {
                         e.stopPropagation();
                         const emoji = this.getAttribute('data-emoji');
-                        if (emoji === '+') {
-                            showEmojiPicker(messageElement);
-                        } else {
-                            addReactionToMessage(messageElement, emoji);
+                        // Only add reaction if it's one of the allowed 6 emojis
+                        if (allowedReactions.includes(emoji)) {
+                            toggleReactionOnMessage(messageElement, emoji);
                             hideReactionPanel();
                         }
                     });
@@ -2053,8 +2034,7 @@
 
             // Show reaction panel
             function showReactionPanel(messageElement) {
-                hideReactionPanel();
-                hideEmojiPicker();
+                hideReactionPanel(); // Hide any currently visible panel
                 const reactionPanel = messageElement.querySelector('.reaction-panel');
                 if (reactionPanel) {
                     reactionPanel.classList.add('visible');
@@ -2071,74 +2051,30 @@
                 }
             }
 
-            // Show emoji picker
-            function showEmojiPicker(messageElement) {
-                hideReactionPanel();
-                const emojiPicker = emojiPickerTemplate.cloneNode(true);
-                emojiPicker.id = '';
-                emojiPicker.style.display = 'block';
-                messageElement.appendChild(emojiPicker);
-                setTimeout(() => {
-                    emojiPicker.classList.add('visible');
-                }, 10);
-                activeEmojiPicker = emojiPicker;
-                activeMessageElement = messageElement;
-
-                emojiPicker.querySelectorAll('.emoji-category').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const category = this.getAttribute('data-category');
-                        emojiPicker.querySelectorAll('.emoji-category').forEach(el => {
-                            el.classList.remove('active');
-                        });
-                        this.classList.add('active');
-                        const container = emojiPicker.querySelector('.emoji-container');
-                        container.innerHTML = '';
-                        emojisByCategory[category].forEach(emoji => {
-                            const btn = document.createElement('button');
-                            btn.className = 'emoji-btn';
-                            btn.textContent = emoji;
-                            btn.setAttribute('aria-label', `${emoji} emoji`);
-                            btn.addEventListener('click', function(e) {
-                                e.stopPropagation();
-                                addReactionToMessage(messageElement, emoji);
-                                hideEmojiPicker();
-                            });
-                            container.appendChild(btn);
-                        });
-                    });
-                });
-                emojiPicker.querySelector('.emoji-category.active').click();
-            }
-
-            // Hide emoji picker
-            function hideEmojiPicker() {
-                if (activeEmojiPicker) {
-                    activeEmojiPicker.classList.remove('visible');
-                    setTimeout(() => {
-                        if (activeEmojiPicker && activeEmojiPicker.parentNode) {
-                            activeEmojiPicker.parentNode.removeChild(activeEmojiPicker);
-                        }
-                        activeEmojiPicker = null;
-                    }, 300);
-                }
-            }
-
-            // Add reaction to message
-            function addReactionToMessage(messageElement, emoji) {
+            // Toggle reaction on message
+            function toggleReactionOnMessage(messageElement, emoji) {
                 let existingReaction = messageElement.querySelector(`.message-reaction[data-emoji="${emoji}"]`);
+                
                 if (existingReaction) {
-                    const countElement = existingReaction.querySelector('.reaction-count');
-                    let count = parseInt(countElement.textContent);
-                    countElement.textContent = (count + 1).toString();
-                    existingReaction.classList.remove('animation-reactionAppear');
-                    void existingReaction.offsetWidth;
-                    existingReaction.classList.add('animation-reactionAppear');
+                    // Reaction exists, remove it (toggle off)
+                    existingReaction.remove();
                 } else {
+                    // Reaction does not exist, add it (toggle on)
+                    // First, remove any other reactions on this message, as only one reaction per message is typical for simple UIs
+                    messageElement.querySelectorAll('.message-reaction').forEach(r => r.remove());
+
                     const reaction = document.createElement('div');
                     reaction.className = 'message-reaction';
                     reaction.setAttribute('data-emoji', emoji);
-                    reaction.innerHTML = `${emoji} <span class="reaction-count">1</span>`;
-                    messageElement.appendChild(reaction);
+                    reaction.innerHTML = `${emoji}`; // No count, just the emoji itself
+
+                    // Get the timestamp element to insert the reaction before it
+                    const timestamp = messageElement.querySelector('.message-time');
+                    if (timestamp) {
+                        messageElement.insertBefore(reaction, timestamp);
+                    } else {
+                        messageElement.appendChild(reaction);
+                    }
                 }
             }
 
