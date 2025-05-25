@@ -1285,9 +1285,9 @@
             const imagePreviewClose = document.getElementById('image-preview-close');
 
             // Get dynamic names from localStorage
-            const userName = localStorage.getItem('samia_user_name') || 'friend';
-            const gfName = localStorage.getItem('samia_gf_name') || 'Samia';
-            const gfNameFull = localStorage.getItem('samia_gf_name_full') || 'Samia Afroz';
+            const userName = localStorage.getItem('aigf_user_name') || 'friend';
+            const gfName = localStorage.getItem('aigf_gf_name') || 'aigf';
+            const gfNameFull = localStorage.getItem('aigf_gf_name_full') || 'aigf Afroz';
 
             // Update profile name and title
             profileName.textContent = `${gfNameFull} 💖`;
@@ -1300,7 +1300,7 @@
             const GEMINI_API_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
 
             // Get the updated prompt from localStorage
-            const basePrompt = localStorage.getItem('samia_updated_prompt') || '';
+            const basePrompt = localStorage.getItem('aigf_updated_prompt') || '';
 
             // Conversation history array to maintain state
             let conversationHistory = [];
@@ -1337,7 +1337,7 @@
             // Initialize the app
             function init() {
                 // Check for existing theme preference
-                const theme = localStorage.getItem('samia_theme');
+                const theme = localStorage.getItem('aigf_theme');
                 if (theme === 'dark') {
                     document.body.classList.add('dark-mode');
                     themeIcon.classList.remove('fa-moon');
@@ -1445,7 +1445,7 @@
                 themeToggle.addEventListener('click', function() {
                     document.body.classList.toggle('dark-mode');
                     const isDark = document.body.classList.contains('dark-mode');
-                    localStorage.setItem('samia_theme', isDark ? 'dark' : 'light');
+                    localStorage.setItem('aigf_theme', isDark ? 'dark' : 'light');
                     themeIcon.classList.toggle('fa-moon', !isDark);
                     themeIcon.classList.toggle('fa-sun', isDark);
                 });
