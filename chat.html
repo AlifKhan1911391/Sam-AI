@@ -829,8 +829,8 @@
 
         .message-reaction {
             position: absolute;
-            bottom: -15px; /* Adjust as needed for desired position */
-            right: 10px; /* Adjust as needed for desired position */
+            bottom: -15px;
+            right: 10px;
             background-color: var(--background);
             border-radius: 12px;
             padding: 2px 6px;
@@ -850,7 +850,7 @@
 
         .bot-message .message-reaction {
             right: auto;
-            left: 10px; /* For bot messages, position on the left */
+            left: 10px;
         }
 
         .reaction-count {
@@ -1160,7 +1160,7 @@
                 <i class="fas fa-arrow-left"></i>
             </div>
             <div class="profile-pic avatar-loading">
-                <img src="avatar.jpeg" alt="Girlfriend's Avatar" 
+                <img id="profile-avatar" src="avatar.jpeg" alt="Girlfriend's Avatar" 
                      onload="this.parentElement.classList.remove('avatar-loading')"
                      onerror="this.src='https://i.imgur.com/JQJxZOY.jpg'; this.parentElement.classList.remove('avatar-loading')">
             </div>
@@ -1260,10 +1260,9 @@
             const themeToggle = document.getElementById('theme-toggle');
             const themeIcon = themeToggle.querySelector('i');
             const profilePic = document.querySelector('.profile-pic');
+            const profileAvatar = document.getElementById('profile-avatar');
             const backButton = document.getElementById('back-button');
             const reactionPanelTemplate = document.getElementById('reaction-panel-template');
-            // const emojiPickerTemplate = document.getElementById('emoji-picker-template'); // No longer needed for full emoji picker
-            // const emojiContainer = document.getElementById('emoji-container'); // No longer needed for full emoji picker
             const charCounter = document.getElementById('char-counter');
             const profileName = document.getElementById('profile-name');
             const photoInput = document.getElementById('photo-input');
@@ -1277,14 +1276,16 @@
             const imagePreviewImg = document.getElementById('image-preview-img');
             const imagePreviewClose = document.getElementById('image-preview-close');
 
-            // Get dynamic names from localStorage
+            // Get dynamic names and avatar from localStorage
             const userName = localStorage.getItem('aigf_user_name') || 'jaaaaaan';
             const gfName = localStorage.getItem('aigf_gf_name') || 'Samia';
             const gfNameFull = localStorage.getItem('aigf_gf_name_full') || 'Samia Afroz';
+            const gfAvatar = localStorage.getItem('aigf_gf_avatar') || 'avatar.jpeg';
 
-            // Update profile name and title
+            // Update profile name, title and avatar
             profileName.textContent = `${gfNameFull} 💖`;
             document.title = `${gfName} Chatbot: Your AI Girlfriend`;
+            profileAvatar.src = gfAvatar;
 
             // Google Gemini API Key
             const GEMINI_API_KEY = 'AIzaSyA4noABIgUKn19XEQqP8aVRkmc7VfvF5Cs'; // Replace with your actual Gemini API key
@@ -1303,7 +1304,6 @@
 
             // Track active reaction panel and emoji picker
             let activeReactionPanel = null;
-            // let activeEmojiPicker = null; // No longer needed
             let activeMessageElement = null;
 
             // Current photo data
@@ -1538,7 +1538,7 @@
                 // The Gemini API context is typically handled by passing the full conversation history.
                 // We're passing the base prompt at the start of the `contents` array as a system message.
                 // This means the "basePrompt" should effectively be the first "user" and "model" turn for persona setting.
-                
+
                 formattedConversation.push({
                     role: "user",
                     parts: [{ text: basePrompt || `You are ${gfNameFull} (nickname: ${gfName}), a 19-year-old Bangladeshi virtual girlfriend. Be sweet, romantic, and sometimes flirty. Mix Romanized Bangla (70%) with English (30%). Keep responses short (3-4 lines).` }]
@@ -1584,7 +1584,7 @@
                 } else if (messageText) {
                     formattedConversation.push({ role: "user", parts: [{ text: messageText }] });
                 }
-                
+
                 return formattedConversation;
             }
 
@@ -1696,7 +1696,7 @@
 
                 const avatarHTML = `
                     <div class="message-avatar">
-                        <img src="avatar.jpeg" alt="${gfName}'s Avatar" onerror="this.src='https://i.imgur.com/JQJxZOY.jpg'">
+                        <img src="${gfAvatar}" alt="${gfName}'s Avatar" onerror="this.src='https://i.imgur.com/JQJxZOY.jpg'">
                     </div>
                 `;
 
@@ -1772,7 +1772,7 @@
                                 if (currentTypingElement && currentTypingElement.nextSibling && currentTypingElement.nextSibling.classList && currentTypingElement.nextSibling.classList.contains('typing-cursor')) {
                                     currentTypingElement.nextSibling.remove();
                                 }
-                                
+
                                 // Replace the dynamically typed content with the full parsed markdown for correct rendering
                                 const finalContent = document.createElement('div');
                                 finalContent.innerHTML = segmentContent;
@@ -1835,7 +1835,7 @@
                 container.id = 'typing-indicator';
                 container.innerHTML = `
                     <div class="message-avatar">
-                        <img src="avatar.jpeg" alt="${gfName}'s Avatar" onerror="this.src='https://i.imgur.com/JQJxZOY.jpg'">
+                        <img src="${gfAvatar}" alt="${gfName}'s Avatar" onerror="this.src='https://i.imgur.com/JQJxZOY.jpg'">
                     </div>
                     <div class="typing-indicator">
                         <div class="typing-dot"></div>
@@ -1872,7 +1872,7 @@
                 if (!isUser) {
                     messageHTML += `
                         <div class="message-avatar">
-                            <img src="avatar.jpeg" alt="${gfName}'s Avatar" onerror="this.src='https://i.imgur.com/JQJxZOY.jpg'">
+                            <img src="${gfAvatar}" alt="${gfName}'s Avatar" onerror="this.src='https://i.imgur.com/JQJxZOY.jpg'">
                         </div>
                     `;
                 }
@@ -1958,7 +1958,7 @@
                     lastSeenIndicator.className = 'seen-indicator';
                     lastSeenIndicator.innerHTML = `
                         Seen
-                        <img src="avatar.jpeg" alt="Seen" onerror="this.src='https://i.imgur.com/JQJxZOY.jpg'">
+                        <img src="${gfAvatar}" alt="Seen" onerror="this.src='https://i.imgur.com/JQJxZOY.jpg'">
                     `;
                     chatMessages.appendChild(lastSeenIndicator);
 
@@ -2054,7 +2054,7 @@
             // Toggle reaction on message
             function toggleReactionOnMessage(messageElement, emoji) {
                 let existingReaction = messageElement.querySelector(`.message-reaction[data-emoji="${emoji}"]`);
-                
+
                 if (existingReaction) {
                     // Reaction exists, remove it (toggle off)
                     existingReaction.remove();
