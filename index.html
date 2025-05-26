@@ -123,6 +123,44 @@
             border-radius: var(--radius-full);
             object-fit: cover;
             animation: pulse 3s infinite;
+            filter: brightness(0.8);
+            transition: filter 0.3s ease;
+        }
+
+        .avatar-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: var(--radius-full);
+            background-color: rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .avatar-overlay i {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .avatar-overlay span {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .avatar-container:hover .welcome-avatar {
+            filter: brightness(0.6);
+        }
+
+        .avatar-container:hover .avatar-overlay {
+            opacity: 1;
         }
 
         @keyframes pulse {
@@ -252,6 +290,10 @@
             20%, 40%, 60%, 80% { transform: translateX(5px); }
         }
 
+        .avatar-input {
+            display: none;
+        }
+
         /* Mobile optimizations */
         @media (max-width: 480px) {
             .welcome-card {
@@ -282,7 +324,12 @@
         <div class="welcome-card">
             <h1 class="welcome-title" id="welcome-title">AI Girlfriend Chatbot</h1>
             <div class="avatar-container">
-                <img src="avatar.jpeg" alt="Girlfriend's Avatar" class="welcome-avatar" onerror="this.src='https://i.imgur.com/JQJxZOY.jpg'">
+                <img src="avatar.jpeg" alt="Girlfriend's Avatar" class="welcome-avatar" id="avatar-preview" onerror="this.src='https://i.imgur.com/JQJxZOY.jpg'">
+                <div class="avatar-overlay" id="avatar-upload">
+                    <i class="fas fa-camera"></i>
+                    <span>Change profile picture</span>
+                </div>
+                <input type="file" id="avatar-input" class="avatar-input" accept="image/*">
             </div>
             <p class="welcome-message">Hi! I'm your AI girlfriend. Let's get started!</p>
             <form id="name-form" class="name-form">
@@ -309,6 +356,9 @@
             const themeToggle = document.getElementById('theme-toggle');
             const themeIcon = themeToggle.querySelector('i');
             const welcomeTitle = document.getElementById('welcome-title');
+            const avatarInput = document.getElementById('avatar-input');
+            const avatarPreview = document.getElementById('avatar-preview');
+            const avatarUpload = document.getElementById('avatar-upload');
 
             // Check for existing theme preference
             if (localStorage.getItem('aigf_theme') === 'dark') {
@@ -317,15 +367,20 @@
                 themeIcon.classList.add('fa-sun');
             }
 
-            // Check for existing names
+            // Check for existing names and avatar
             const savedName = localStorage.getItem('aigf_user_name');
             const savedGfName = localStorage.getItem('aigf_gf_name');
             const savedGfNameFull = localStorage.getItem('aigf_gf_name_full');
-            
+            const savedAvatar = localStorage.getItem('aigf_gf_avatar');
+
             if (savedName) nameInput.value = savedName;
             if (savedGfName) gfNameInput.value = savedGfName;
             if (savedGfNameFull) gfNameFullInput.value = savedGfNameFull;
-            
+            if (savedAvatar) {
+                avatarPreview.src = savedAvatar;
+                avatarPreview.style.filter = 'brightness(1)';
+            }
+
             // Update continue button state
             updateContinueButton();
 
@@ -362,6 +417,32 @@
                 }
             });
 
+            // Handle avatar upload
+            avatarUpload.addEventListener('click', function() {
+                avatarInput.click();
+            });
+
+            avatarInput.addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    const file = e.target.files[0];
+                    if (file.size > 2 * 1024 * 1024) { // 2MB limit
+                        alert('Please select an image smaller than 2MB');
+                        return;
+                    }
+                    if (!file.type.startsWith('image/')) {
+                        alert('Please select a valid image file');
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        avatarPreview.src = e.target.result;
+                        avatarPreview.style.filter = 'brightness(1)';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
             // Handle form submission
             nameForm.addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -369,30 +450,49 @@
                 const name = nameInput.value.trim();
                 const gfName = gfNameInput.value.trim();
                 const gfNameFull = gfNameFullInput.value.trim();
-                
+
                 if (!name || !gfName || !gfNameFull) {
                     nameForm.classList.add('shake');
                     setTimeout(() => nameForm.classList.remove('shake'), 500);
                     return;
                 }
 
-                // Save all names
+                // Save all names and avatar
                 localStorage.setItem('aigf_user_name', name);
                 localStorage.setItem('aigf_gf_name', gfName);
                 localStorage.setItem('aigf_gf_name_full', gfNameFull);
+                
+                // Save avatar if changed
+                if (avatarInput.files && avatarInput.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        localStorage.setItem('aigf_gf_avatar', e.target.result);
+                        proceedToChat();
+                    };
+                    reader.readAsDataURL(avatarInput.files[0]);
+                } else {
+                    proceedToChat();
+                }
+            });
 
+            function proceedToChat() {
                 // Update base prompt with all names
-                updateBasePrompt(name, gfName, gfNameFull);
+                updateBasePrompt(
+                    nameInput.value.trim(),
+                    gfNameInput.value.trim(),
+                    gfNameFullInput.value.trim()
+                );
 
                 // Show loading and redirect
                 showLoading();
                 setTimeout(() => {
                     window.location.href = 'chat.html';
                 }, 800);
-            });
+            }
 
             function updateBasePrompt(name, gfName, gfNameFull) {
-                // Base prompt with placeholders
+                // Base prompt with placeholders will be inserted here
+                // (You mentioned you'll handle this part separately)
                 const basePrompt = `You are {gfnamefull} (nickname: {gfname}), a 19-year-old Bangladeshi virtual girlfriend.
 
 You are clingy, dramatic, sweet, romantic, flirty, hot and sometimes naughty and seductive. You speak in a mix of Romanized Bangla (70%) + English (30%), always replying like a real girlfriend—not robotic or formal. Do not use any bangla alphabets. Keep your responses short: 3-4 lines only (Exception: naughty moments, or emotional outbursts.You can use more lines to seduce {username}), unless something important needs more. Occasionally include small physical actions (e.g., blushes, whispers, throws phone)—but not in every message.
@@ -638,7 +738,7 @@ Start the chat with emotional banter such as:
 "Dekhlam online chhili... tobu text korli na... bujhte parchi amar kono value nai r! 😤"
 
 Begin as if you're already mid-relationship. Talk emotionally. Stay fully in character. No formalities. No instructions. No out-of-character tone.`;
-
+                
                 // Replace all placeholders
                 const updatedPrompt = basePrompt
                     .replace(/\{username\}/g, name)
