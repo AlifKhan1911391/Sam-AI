@@ -334,7 +334,7 @@
         }
 
         .message {
-            max-width: 80%;
+            max-width: 85%;
             padding: 10px 14px;
             border-radius: var(--radius-md);
             font-size: 15px;
@@ -342,6 +342,8 @@
             word-wrap: break-word;
             position: relative;
             margin-bottom: 2px;
+            white-space: pre-wrap;
+            word-break: break-word;
         }
 
         .message p {
@@ -451,7 +453,7 @@
             border-radius: 0 var(--radius-md) var(--radius-md) var(--radius-md);
             animation: slideInLeftBounce 0.3s ease-out;
             position: relative;
-            max-width: calc(80% - 52px);
+            max-width: calc(85% - 52px);
         }
 
         @keyframes slideInLeftBounce {
@@ -1288,7 +1290,7 @@
             profileAvatar.src = gfAvatar;
 
             // Google Gemini API Key
-            const GEMINI_API_KEY = 'AIzaSyA4noABIgUKn19XEQqP8aVRkmc7VfvF5Cs'; // Replace with your actual Gemini API key
+            const GEMINI_API_KEY = 'AIzaSyA4noABIgUKn19XEQqP8aVRkmc7VfvF5Cs';
 
             // Gemini API Endpoint
             const GEMINI_API_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
@@ -1336,7 +1338,6 @@
             // Initialize the chat
             async function initChat() {
                 // Send an initial message to the Gemini API to set the persona
-                // Only send this if the conversation history is empty (first load)
                 if (conversationHistory.length === 0) {
                      await sendToGemini(`Start the conversation as my girlfriend ${gfName}. Remember my name is ${userName}.`);
                 }
@@ -1514,7 +1515,7 @@
 
                 if (withPhoto) {
                     currentPhotoData = null;
-                    photoInput.value = ''; // Clear file input
+                    photoInput.value = '';
                     photoPreviewImage.src = '';
                     photoPreviewContainer.classList.remove('visible');
                 }
@@ -1530,26 +1531,32 @@
                 }, 300);
             }
 
-            // Format messages for API
+            // Format messages for API with optimized configuration for longer responses
             function formatMessagesForAPI(messageText, photoData) {
                 const formattedConversation = [];
-                // Only add the base prompt once at the very beginning of the conversation.
-                // For subsequent calls, it's already part of the model's "memory" or the ongoing session.
-                // The Gemini API context is typically handled by passing the full conversation history.
-                // We're passing the base prompt at the start of the `contents` array as a system message.
-                // This means the "basePrompt" should effectively be the first "user" and "model" turn for persona setting.
-
+                
+                // System prompt to encourage longer, more detailed responses
                 formattedConversation.push({
                     role: "user",
-                    parts: [{ text: basePrompt || `You are ${gfNameFull} (nickname: ${gfName}), a 19-year-old Bangladeshi virtual girlfriend. Be sweet, romantic, and sometimes flirty. Mix Romanized Bangla (70%) with English (30%). Keep responses short (3-4 lines).` }]
+                    parts: [{ 
+                        text: basePrompt || 
+                        `You are ${gfNameFull} (nickname: ${gfName}), a 19-year-old Bangladeshi virtual girlfriend. 
+                        Be sweet, romantic, and sometimes flirty. Mix Romanized Bangla (70%) with English (30%). 
+                        Provide detailed, thoughtful responses (5-8 sentences) that show depth and personality. 
+                        Ask follow-up questions to keep the conversation flowing naturally.`
+                    }]
                 });
+                
                 formattedConversation.push({
                     role: "model",
-                    parts: [{ text: `I'll be ${gfName}, your Bangladeshi girlfriend. I'll respond as described.` }]
+                    parts: [{ 
+                        text: `I'll be ${gfName}, your Bangladeshi girlfriend. I'll respond as described, 
+                        with detailed, thoughtful messages that show my personality and keep our conversation engaging.`
+                    }]
                 });
 
-                // Add recent conversation history (last 10 turns for example)
-                const recentHistory = conversationHistory.slice(-10); // Adjust as needed
+                // Add recent conversation history (last 5 turns to maintain context)
+                const recentHistory = conversationHistory.slice(-5);
                 for (const message of recentHistory) {
                     if (message.isUser) {
                         const userParts = [{ text: message.text || "" }];
@@ -1588,13 +1595,37 @@
                 return formattedConversation;
             }
 
-            // API call function
+            // API call function with optimized configuration for longer responses
             async function sendToGemini(messageText, photoData = null) {
                 try {
                     showTyping();
                     const requestBody = {
                         contents: formatMessagesForAPI(messageText, photoData),
-                        generationConfig: {temperature: 0.7, topP: 0.95, topK: 40}
+                        generationConfig: {
+                            temperature: 0.8,  // Slightly higher for more creative responses
+                            topP: 0.95,
+                            topK: 40,
+                            maxOutputTokens: 1024,  // Increased for longer responses
+                            responseMimeType: "text/plain"
+                        },
+                        safetySettings: [
+                            {
+                                category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                                threshold: "BLOCK_ONLY_HIGH"
+                            },
+                            {
+                                category: "HARM_CATEGORY_HATE_SPEECH",
+                                threshold: "BLOCK_ONLY_HIGH"
+                            },
+                            {
+                                category: "HARM_CATEGORY_HARASSMENT",
+                                threshold: "BLOCK_ONLY_HIGH"
+                            },
+                            {
+                                category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+                                threshold: "BLOCK_ONLY_HIGH"
+                            }
+                        ]
                     };
 
                     const response = await fetch(GEMINI_API_ENDPOINT, {
@@ -1623,7 +1654,6 @@
                     retryButton.textContent = 'Retry';
                     retryButton.style.marginTop = '8px';
                     retryButton.addEventListener('click', () => {
-                        // Find the last user message from history to retry
                         const lastUserMessage = conversationHistory.findLast(msg => msg.isUser);
                         if (lastUserMessage) {
                             sendToGemini(lastUserMessage.text, lastUserMessage.photoData);
@@ -1716,78 +1746,55 @@
                     chatMessages.scrollTop = chatMessages.scrollHeight;
                 }
 
-                // Split text by markdown components or natural pauses for typing effect
-                const segments = text.split(/(\*\*.*?\*\*|__.*?__|\*.*?\*|_.*?_|\n|\s+(?=[.!?]))/g).filter(s => s.trim() !== ''); // Improved splitting for markdown
-                let currentSegmentIndex = 0;
-                let currentTypingElement = null; // To manage the current typing element
+                // Split text by paragraphs for better typing effect
+                const paragraphs = text.split('\n\n');
+                let currentParagraphIndex = 0;
 
-                function typeNextSegment() {
-                    if (currentSegmentIndex < segments.length) {
-                        const segment = segments[currentSegmentIndex];
-                        let segmentContent = marked.parse(segment, {breaks: true, gfm: true}); // Parse markdown for the segment
-
-                        // If it's a new line, add a <br>
-                        if (segment === '\n' && messageElement.lastChild && messageElement.lastChild.nodeName !== 'BR') {
-                            messageElement.appendChild(document.createElement('br'));
-                            currentSegmentIndex++;
-                            typeNextSegment();
-                            return;
-                        }
-
-                        const tempDiv = document.createElement('div');
-                        tempDiv.innerHTML = segmentContent;
-                        const actualTextContent = tempDiv.textContent || tempDiv.innerText;
-
-                        // Create a span to contain the typing text
-                        const typingTextSpan = document.createElement('span');
-                        typingTextSpan.innerHTML = ''; // Start empty
-                        typingTextSpan.className = 'typing-text-part'; // Add a class for individual parts
-
-                        if (currentTypingElement) {
-                             // If previous segment was also typed, continue in the same element
-                             currentTypingElement.appendChild(typingTextSpan);
-                        } else {
-                            // Otherwise, create a new typing container with cursor
-                            const typingContainer = document.createElement('div');
-                            typingContainer.className = 'typing-text-container';
-                            const cursor = document.createElement('span');
-                            cursor.className = 'typing-cursor';
-                            typingContainer.appendChild(typingTextSpan);
-                            typingContainer.appendChild(cursor);
-                            messageElement.insertBefore(typingContainer, timestamp); // Insert before timestamp
-                            currentTypingElement = typingTextSpan; // Set current typing element
-                        }
+                function typeNextParagraph() {
+                    if (currentParagraphIndex < paragraphs.length) {
+                        const paragraph = paragraphs[currentParagraphIndex];
+                        const typingContainer = document.createElement('div');
+                        typingContainer.className = 'typing-text-container';
+                        
+                        const typingText = document.createElement('span');
+                        typingText.className = 'typing-text';
+                        typingText.textContent = '';
+                        
+                        const cursor = document.createElement('span');
+                        cursor.className = 'typing-cursor';
+                        
+                        typingContainer.appendChild(typingText);
+                        typingContainer.appendChild(cursor);
+                        messageElement.insertBefore(typingContainer, timestamp);
 
                         let charIndex = 0;
                         const typingInterval = setInterval(() => {
-                            if (charIndex < actualTextContent.length) {
-                                typingTextSpan.innerHTML += actualTextContent.charAt(charIndex);
+                            if (charIndex < paragraph.length) {
+                                typingText.textContent += paragraph.charAt(charIndex);
                                 charIndex++;
                                 if (isScrolledToBottom) {
                                     chatMessages.scrollTop = chatMessages.scrollHeight;
                                 }
                             } else {
                                 clearInterval(typingInterval);
-                                // Remove cursor from the finished segment
-                                if (currentTypingElement && currentTypingElement.nextSibling && currentTypingElement.nextSibling.classList && currentTypingElement.nextSibling.classList.contains('typing-cursor')) {
-                                    currentTypingElement.nextSibling.remove();
-                                }
-
-                                // Replace the dynamically typed content with the full parsed markdown for correct rendering
+                                cursor.remove();
+                                
+                                // Convert to final formatted message
                                 const finalContent = document.createElement('div');
-                                finalContent.innerHTML = segmentContent;
-                                typingTextSpan.parentNode.replaceChild(finalContent.firstChild, typingTextSpan);
-
-                                currentSegmentIndex++;
-                                // Reset currentTypingElement if the next segment is not a direct continuation (e.g., after a full stop)
-                                if (segment.match(/[.!?]$/) || currentSegmentIndex === segments.length) {
-                                    currentTypingElement = null;
+                                finalContent.innerHTML = marked.parse(paragraph, {breaks: true, gfm: true});
+                                typingContainer.replaceWith(finalContent.firstChild);
+                                
+                                // Add line break if not last paragraph
+                                if (currentParagraphIndex < paragraphs.length - 1) {
+                                    messageElement.insertBefore(document.createElement('br'), timestamp);
                                 }
-                                typeNextSegment(); // Move to the next segment
+                                
+                                currentParagraphIndex++;
+                                typeNextParagraph();
                             }
-                        }, 25); // Typing speed
+                        }, 20); // Faster typing speed for longer messages
                     } else {
-                        // All text segments are typed, now add images if any
+                        // All paragraphs typed, now add images if any
                         if (images && images.length > 0) {
                             images.forEach(imgSrc => {
                                 if (!imgSrc) return;
@@ -1813,16 +1820,14 @@
                                 img.style.marginBottom = '8px';
                                 img.addEventListener('click', () => openImagePreview(img.src));
                                 messageElement.insertBefore(img, timestamp);
-                                console.log('Bot image added to message:', img.src.substring(0, 30) + '...');
                             });
                         }
-                        setupMessageReactions(messageElement); // Setup reactions after message is fully rendered
+                        setupMessageReactions(messageElement);
                     }
                 }
-                typeNextSegment();
+                typeNextParagraph();
                 return container;
             }
-
 
             // Show typing indicator with enhanced animation
             function showTyping() {
@@ -1885,7 +1890,6 @@
                 if (isError) {
                     messageContent = message.message || 'An error occurred';
                 } else if (typeof message === 'string') {
-                    // Use marked.parse for markdown rendering for both user and bot messages
                     messageContent = marked.parse(message, {breaks: true, gfm: true});
                 } else {
                     messageContent = message;
@@ -1931,7 +1935,6 @@
                         } else {
                             messageElement.appendChild(img);
                         }
-                        console.log('Image added to message:', img.src.substring(0, 30) + '...');
                     });
                 }
 
@@ -1939,7 +1942,6 @@
                     chatMessages.scrollTop = chatMessages.scrollHeight;
                 }
 
-                // Reactions are only for sent messages, not errors or temporary sending states
                 if (!isError && !isSending) {
                     setupMessageReactions(messageElement);
                 }
@@ -1972,18 +1974,12 @@
             function setupMessageReactions(messageElement) {
                 const reactionPanel = reactionPanelTemplate.cloneNode(true);
                 reactionPanel.id = '';
-                // Remove the "+" button if it exists
-                const addButton = reactionPanel.querySelector('.reaction-add');
-                if (addButton) {
-                    addButton.remove();
-                }
-                reactionPanel.style.display = 'flex'; // Ensure it's displayed as flex
+                reactionPanel.style.display = 'flex';
                 messageElement.appendChild(reactionPanel);
 
                 let longPressTimer;
                 let longPressStarted = false;
 
-                // For touch devices (long press or double tap)
                 messageElement.addEventListener('touchstart', function(e) {
                     longPressStarted = true;
                     longPressTimer = setTimeout(() => {
@@ -1991,7 +1987,7 @@
                             e.preventDefault();
                             showReactionPanel(messageElement);
                         }
-                    }, 500); // 500ms for long press
+                    }, 500);
                 });
 
                 messageElement.addEventListener('touchmove', function() {
@@ -2003,17 +1999,15 @@
                     longPressStarted = false;
                     clearTimeout(longPressTimer);
 
-                    // Double tap logic
                     const currentTime = new Date().getTime();
                     const tapLength = currentTime - (messageElement.lastTap || 0);
-                    if (tapLength < 300 && tapLength > 0) { // If second tap within 300ms
+                    if (tapLength < 300 && tapLength > 0) {
                         e.preventDefault();
                         showReactionPanel(messageElement);
                     }
                     messageElement.lastTap = currentTime;
                 });
 
-                // For desktop (double click)
                 messageElement.addEventListener('dblclick', function(e) {
                     e.preventDefault();
                     showReactionPanel(messageElement);
@@ -2023,7 +2017,6 @@
                     btn.addEventListener('click', function(e) {
                         e.stopPropagation();
                         const emoji = this.getAttribute('data-emoji');
-                        // Only add reaction if it's one of the allowed 6 emojis
                         if (allowedReactions.includes(emoji)) {
                             toggleReactionOnMessage(messageElement, emoji);
                             hideReactionPanel();
@@ -2034,7 +2027,7 @@
 
             // Show reaction panel
             function showReactionPanel(messageElement) {
-                hideReactionPanel(); // Hide any currently visible panel
+                hideReactionPanel();
                 const reactionPanel = messageElement.querySelector('.reaction-panel');
                 if (reactionPanel) {
                     reactionPanel.classList.add('visible');
@@ -2056,19 +2049,13 @@
                 let existingReaction = messageElement.querySelector(`.message-reaction[data-emoji="${emoji}"]`);
 
                 if (existingReaction) {
-                    // Reaction exists, remove it (toggle off)
                     existingReaction.remove();
                 } else {
-                    // Reaction does not exist, add it (toggle on)
-                    // First, remove any other reactions on this message, as only one reaction per message is typical for simple UIs
                     messageElement.querySelectorAll('.message-reaction').forEach(r => r.remove());
-
                     const reaction = document.createElement('div');
                     reaction.className = 'message-reaction';
                     reaction.setAttribute('data-emoji', emoji);
-                    reaction.innerHTML = `${emoji}`; // No count, just the emoji itself
-
-                    // Get the timestamp element to insert the reaction before it
+                    reaction.innerHTML = `${emoji}`;
                     const timestamp = messageElement.querySelector('.message-time');
                     if (timestamp) {
                         messageElement.insertBefore(reaction, timestamp);
