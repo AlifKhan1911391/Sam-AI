@@ -418,7 +418,8 @@
             border-bottom-right-radius: 4px;
             animation: slideInRightBounce 0.3s ease-out;
             position: relative;
-            padding: 12px 16px;
+            padding: 12px 16px 10px 16px;
+            max-width: 80%;
         }
 
         .sending-message {
@@ -514,7 +515,7 @@
             font-size: 11px;
             color: var(--text-secondary);
             opacity: 0.8;
-            margin-top: 4px;
+            margin-top: 2px;
             text-align: right;
             transition: color var(--transition-normal);
         }
@@ -538,6 +539,8 @@
             border-radius: 0 var(--radius-md) var(--radius-md) var(--radius-md);
             margin-left: 12px;
             animation: fadeIn 0.3s ease-out;
+            max-width: calc(85% - 52px);
+            overflow: hidden;
         }
 
         .typing-dot {
@@ -567,35 +570,31 @@
         }
 
         .typing-text-container {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
             position: relative;
+            max-width: 100%;
+            overflow: hidden;
+            vertical-align: middle;
         }
 
         .typing-text {
-            display: inline-block;
+            display: inline;
             overflow: hidden;
-            border-right: 2px solid var(--text-secondary);
-            white-space: nowrap;
-            animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite;
+            border-right: none;
+            white-space: pre-wrap;
+            animation: none;
+            max-width: 100%;
         }
 
         .typing-cursor {
             display: inline-block;
             width: 2px;
-            height: 16px;
-            background-color: var(--text-secondary);
+            height: 1em;
+            background-color: var(--text-primary);
             margin-left: 2px;
             animation: blink-cursor 0.8s ease-in-out infinite;
-        }
-
-        @keyframes typing {
-            from { width: 0 }
-            to { width: 100% }
-        }
-
-        @keyframes blink-caret {
-            from, to { border-color: transparent }
-            50% { border-color: var(--text-secondary); }
+            vertical-align: middle;
         }
 
         @keyframes blink-cursor {
@@ -1534,7 +1533,7 @@
             // Format messages for API with optimized configuration for longer responses
             function formatMessagesForAPI(messageText, photoData) {
                 const formattedConversation = [];
-                
+
                 // System prompt to encourage longer, more detailed responses
                 formattedConversation.push({
                     role: "user",
@@ -1546,7 +1545,7 @@
                         Ask follow-up questions to keep the conversation flowing naturally.`
                     }]
                 });
-                
+
                 formattedConversation.push({
                     role: "model",
                     parts: [{ 
@@ -1755,17 +1754,24 @@
                         const paragraph = paragraphs[currentParagraphIndex];
                         const typingContainer = document.createElement('div');
                         typingContainer.className = 'typing-text-container';
-                        
+
                         const typingText = document.createElement('span');
                         typingText.className = 'typing-text';
                         typingText.textContent = '';
-                        
+
                         const cursor = document.createElement('span');
                         cursor.className = 'typing-cursor';
-                        
+
                         typingContainer.appendChild(typingText);
                         typingContainer.appendChild(cursor);
-                        messageElement.insertBefore(typingContainer, timestamp);
+                        
+                        // Insert the container before the timestamp
+                        const timestamp = messageElement.querySelector('.message-time');
+                        if (timestamp) {
+                            messageElement.insertBefore(typingContainer, timestamp);
+                        } else {
+                            messageElement.appendChild(typingContainer);
+                        }
 
                         let charIndex = 0;
                         const typingInterval = setInterval(() => {
@@ -1778,21 +1784,27 @@
                             } else {
                                 clearInterval(typingInterval);
                                 cursor.remove();
-                                
+
                                 // Convert to final formatted message
                                 const finalContent = document.createElement('div');
                                 finalContent.innerHTML = marked.parse(paragraph, {breaks: true, gfm: true});
                                 typingContainer.replaceWith(finalContent.firstChild);
-                                
+
                                 // Add line break if not last paragraph
                                 if (currentParagraphIndex < paragraphs.length - 1) {
-                                    messageElement.insertBefore(document.createElement('br'), timestamp);
+                                    const br = document.createElement('br');
+                                    const timestamp = messageElement.querySelector('.message-time');
+                                    if (timestamp) {
+                                        messageElement.insertBefore(br, timestamp);
+                                    } else {
+                                        messageElement.appendChild(br);
+                                    }
                                 }
-                                
+
                                 currentParagraphIndex++;
                                 typeNextParagraph();
                             }
-                        }, 20); // Faster typing speed for longer messages
+                        }, 20);
                     } else {
                         // All paragraphs typed, now add images if any
                         if (images && images.length > 0) {
@@ -1819,7 +1831,13 @@
                                 img.style.marginTop = '8px';
                                 img.style.marginBottom = '8px';
                                 img.addEventListener('click', () => openImagePreview(img.src));
-                                messageElement.insertBefore(img, timestamp);
+                                
+                                const timestamp = messageElement.querySelector('.message-time');
+                                if (timestamp) {
+                                    messageElement.insertBefore(img, timestamp);
+                                } else {
+                                    messageElement.appendChild(img);
+                                }
                             });
                         }
                         setupMessageReactions(messageElement);
