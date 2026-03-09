@@ -1,5 +1,4 @@
 exports.handler = async function (event) {
-  // Only allow POST
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
@@ -7,28 +6,40 @@ exports.handler = async function (event) {
   const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
   if (!GEMINI_API_KEY) {
-    console.error('❌ GEMINI_API_KEY is not set in environment variables');
+    console.error('❌ GEMINI_API_KEY is not set');
     return {
       statusCode: 500,
       body: JSON.stringify({ error: { message: 'API key not configured.' } }),
     };
   }
 
-  console.log('✅ API key found, sending request to Gemini...');
-
   const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
 
   try {
+    const body = JSON.parse(event.body);
+
+    // Extract systemInstruction and contents separately
+    const { systemInstruction, contents, generationConfig } = body;
+
+    const requestBody = { contents, generationConfig };
+    if (systemInstruction) {
+      requestBody.systemInstruction = systemInstruction;
+    }
+
+    console.log('✅ Sending request to Gemini, message count:', contents?.length);
+
     const response = await fetch(GEMINI_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: event.body,
+      body: JSON.stringify(requestBody),
     });
 
     const data = await response.json();
 
-    console.log('📦 Gemini response status:', response.status);
-    console.log('📦 Gemini response data:', JSON.stringify(data).substring(0, 500));
+    console.log('📦 Gemini status:', response.status);
+    if (data.error) {
+      console.error('❌ Gemini error:', data.error.message);
+    }
 
     return {
       statusCode: response.status,
@@ -36,7 +47,7 @@ exports.handler = async function (event) {
       body: JSON.stringify(data),
     };
   } catch (err) {
-    console.error('❌ Fetch error:', err.message);
+    console.error('❌ Error:', err.message);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: { message: err.message } }),
