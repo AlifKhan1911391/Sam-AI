@@ -4,7 +4,7 @@ exports.handler = async function (event) {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
-  const GEMINI_API_KEY = 'AIzaSyB2uFkEugL50lUAOE6GiFRP1Fa3YOau4Oo';
+  const GEMINI_API_KEY = 'AIzaSyA598G7x8rWKtOOs-m1cq8QaZNVRzx9QU8';
 
   const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
 
