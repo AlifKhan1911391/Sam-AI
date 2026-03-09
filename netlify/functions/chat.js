@@ -4,7 +4,14 @@ exports.handler = async function (event) {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
-  const GEMINI_API_KEY = 'AIzaSyA598G7x8rWKtOOs-m1cq8QaZNVRzx9QU8';
+  const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+
+  if (!GEMINI_API_KEY) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: { message: 'API key not configured. Please add GEMINI_API_KEY in Netlify environment variables.' } }),
+    };
+  }
 
   const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
 
@@ -12,7 +19,7 @@ exports.handler = async function (event) {
     const response = await fetch(GEMINI_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: event.body, // forward the request body as-is from the frontend
+      body: event.body,
     });
 
     const data = await response.json();
