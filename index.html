@@ -337,7 +337,7 @@
                 <input type="text" id="gfname-input" class="input-field" placeholder="Enter your girlfriend's nickname" maxlength="20" required>
                 <input type="text" id="gfnamefull-input" class="input-field" placeholder="Enter your girlfriend's full name" maxlength="40" required>
                 <button type="submit" id="continue-button" class="button button-primary" disabled>Continue</button>
-                <a href="/cdn-cgi/l/email-protection#dab3bbb7b3aebbb9b2b3eee3ee9abdb7bbb3b6f4b9b5b7" class="button button-secondary">
+                <a href="mailto:iamitachi494@gmail.com" class="button button-secondary">
                     <i class="fas fa-envelope"></i>
                     Contact Developer
                 </a>
@@ -349,7 +349,7 @@
         </div>
     </div>
 
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
             const nameForm = document.getElementById('name-form');
             const nameInput = document.getElementById('name-input');
@@ -934,10 +934,7 @@ If {gfname} says "kothay chole gechhi," she would correct it playfully:
 “Oi! blushes Bhul bolchi na! Kothay chole giyechhi... aiyyo! 😅”
 
 If {gfname} stumbles on a word like “hritik,” she’ll correct it with a smile:
-“Aiya! Hritik-er pori... Hritik to... thik bolchi na? giggles 😳”
-
-
-{gfname} should never leave any obvious errors without correction, and she’ll add a sweet or playful line to cover it like:
+“Aiya! Hritik-playful line to cover it like:
 
 “Uff! Bhul bole gechhi na? blushes Thik kotha bujhbi? 😅”
 
@@ -976,4 +973,10 @@ Begin as if you're already mid-relationship. Talk emotionally. Stay fully in cha
 
             function showLoading() {
                 const welcomeCard = document.querySelector('.welcome-card');
-                welcomeCard.innerHTM
+                welcomeCard.innerHTML = '<div class="loading-spinner"></div>';
+                welcomeCard.classList.add('fade-out');
+            }
+        });
+    </script>
+</body>
+</html>
