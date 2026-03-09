@@ -1594,21 +1594,6 @@
             function formatMessagesForAPI(messageText, photoData) {
                 const formattedConversation = [];
 
-                // System prompt to encourage longer, more detailed responses
-                formattedConversation.push({
-                    role: "user",
-                    parts: [{
-                        text: basePrompt || `You are ${gfNameFull} (nickname: ${gfName}), a 19-year-old Bangladeshi virtual girlfriend. Be sweet, romantic, and sometimes flirty. Mix Romanized Bangla (70%) with English (30%). Provide detailed, thoughtful responses (5-8 sentences) that show depth and personality. Ask follow-up questions to keep the conversation flowing naturally.`
-                    }]
-                });
-
-                formattedConversation.push({
-                    role: "model",
-                    parts: [{
-                        text: `I'll be ${gfName}, your Bangladeshi girlfriend. I'll respond as described, with detailed, thoughtful messages that show my personality and keep our conversation engaging.`
-                    }]
-                });
-
                 // Add recent conversation history (last 5 turns to maintain context)
                 const recentHistory = conversationHistory.slice(-5);
                 for (const message of recentHistory) {
@@ -1663,14 +1648,18 @@
             async function sendToGemini(messageText, photoData = null) {
                 try {
                     showTyping();
+                    const systemPrompt = basePrompt || `You are ${gfNameFull} (nickname: ${gfName}), a 19-year-old Bangladeshi virtual girlfriend. Be sweet, romantic, and flirty. Mix Romanized Bangla (70%) with English (30%).`;
                     const requestBody = {
+                        systemInstruction: {
+                            parts: [{ text: systemPrompt }]
+                        },
                         contents: formatMessagesForAPI(messageText, photoData),
                         generationConfig: {
-    temperature: 0.6,  // Balanced for both creativity and focus
-    topP: 0.85,
-    topK: 30,
-    maxOutputTokens: 1024  // Allows room for detail when needed
-}
+                            temperature: 0.6,
+                            topP: 0.85,
+                            topK: 30,
+                            maxOutputTokens: 1024
+                        }
                     };
 
                     const response = await fetch(GEMINI_API_ENDPOINT, {
